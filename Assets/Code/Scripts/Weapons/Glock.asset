@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be1406f7a4d8b814081774209bf85992, type: 3}
+  m_Name: Glock
+  m_EditorClassIdentifier: 
+  m_gunName: Glock
+  m_weaponType: 0
+  m_shootingModes:
+  - rid: 5750133766806831565
+  m_gunIcon: {fileID: 0}
+  m_muzzlePoint:
+  - Position: {x: 0, y: 0.075, z: 0.2}
+    Rotation: {x: 0, y: 0, z: 0}
+  m_casingEjectPoint:
+  - Position: {x: 0.015, y: 0.085, z: 0.07}
+    Rotation: {x: 0, y: 0, z: -45}
+  m_prefabBullet: {fileID: 5899779744290142188, guid: 4fc6e7184769aa247a808532fe65cc64, type: 3}
+  m_fireRate: 0.25
+  m_fireDelay: 0
+  m_fireCooldownSpeed: 0
+  m_bulletSpeed: 10
+  m_magazineSize: 10
+  m_reloadSpeed: 0
+  m_bulletDamage: 10
+  m_bulletRange: 100
+  m_parabolicMotion:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1.0083313
+      value: -0.055233
+      inSlope: -0.18124886
+      outSlope: -0.18124886
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.30884528
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_muzzleFlash: {fileID: 100004, guid: 302577c4c425ce14781bc5dd214f5576, type: 3}
+  m_impactEffect: {fileID: 0}
+  m_prefabCase: {fileID: 5123463237699109487, guid: f96f078ae7922254da051b55fd9f89f0, type: 3}
+  m_shootCameraShake: {fileID: 11400000, guid: e9ce97b7a206dc64d90931ea044e0c72, type: 2}
+  m_shootSFX: {fileID: 8300000, guid: e9c56fc6d4a125942baf78f3e428b1f0, type: 3}
+  m_reloadSFX: {fileID: 8300000, guid: 2bf6d160e69cd30419496ae9ad86c5ec, type: 3}
+  m_asSlideLock: 1
+  m_backEscursion: 3.5
+  m_leftHandIK:
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: 5750133766806831565
+      type: {class: SemiAutoShooter, ns: AF.TS.Weapons, asm: Assembly-CSharp}
+      data: 
