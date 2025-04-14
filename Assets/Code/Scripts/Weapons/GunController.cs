@@ -66,7 +66,7 @@ namespace AF.TS.Weapons
         [Button("Shoot")]
         public void DebugShoot()
         {
-            m_shootingMode.Shoot();
+            OnFireInput();
         }
 
         [FoldoutGroup("Debug/Gameplay")]
@@ -136,7 +136,7 @@ namespace AF.TS.Weapons
 
         private void Update()
         {
-            m_shootingMode.Update();
+            m_shootingMode.OnUpdate();
         }
 
         #endregion
@@ -182,7 +182,7 @@ namespace AF.TS.Weapons
 
             if (m_Log) Debug.Log($"Weapon {m_weaponDefinition.name} is shooting");
 
-            for (int i = 0; i<m_weaponDefinition.GetMuzzlePoint.Length; i++)
+            for (int i = 0; i < m_weaponDefinition.GetMuzzlePoint.Length; i++)
             {
                 if (m_currentAmmo <= 0)
                 {
@@ -203,7 +203,7 @@ namespace AF.TS.Weapons
                         point.Rotation
                     );
                 }
-                
+
                 GunUtilities.Shoot(
                     this.transform,
                     m_weaponDefinition.GetPrefabBullet.name,
@@ -212,7 +212,8 @@ namespace AF.TS.Weapons
                 ).Init(
                     m_weaponDefinition.GetBulletSpeed,
                     m_weaponDefinition.GetBulletRange,
-                    m_weaponDefinition.GetParabolicMotion
+                    m_weaponDefinition.GetParabolicMotion,
+                    m_weaponDefinition.GetBulletDamage
                 );
 
                 if (m_weaponDefinition.GetCasingEjectPoint != null &&
@@ -236,6 +237,12 @@ namespace AF.TS.Weapons
 
         public void OnFireInput()
         {
+
+            if (m_currentAmmo <= 0 && m_weaponDefinition.GetAutoReload)
+            {
+                TryReload();
+            }
+
             m_shootingMode.Shoot();
         }
 
@@ -256,7 +263,7 @@ namespace AF.TS.Weapons
             if (m_currentAmmo >= m_weaponDefinition.GetMagazineSize || m_isInReload)
             {
                 return;
-            }                
+            }
 
             OnReloadStart?.Invoke();
 

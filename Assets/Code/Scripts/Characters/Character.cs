@@ -1,3 +1,4 @@
+using AF.TS.Utils;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -7,6 +8,8 @@ namespace AF.TS.Characters
     public class Character : MonoBehaviour
     {
         #region Exposed Members: -----------------------------------------------------------------------
+
+        [SerializeField] private bool m_isPlayer = false;
 
         [SerializeReference, InlineProperty, HideLabel] protected TUnitMotion m_Motion = new UnitMotion();
         [SerializeReference, InlineProperty, HideLabel] protected TUnitDriver m_Driver;
@@ -34,6 +37,8 @@ namespace AF.TS.Characters
 
         protected virtual void Awake()
         {
+            if(m_isPlayer) ServiceLocator.Register<Character>(this);
+
             this.m_Motion?.OnStartup(this);
             this.m_Driver?.OnStartup(this);
             this.m_Stats?.OnStartup(this);
@@ -52,6 +57,8 @@ namespace AF.TS.Characters
 
         protected virtual void OnDestroy()
         {
+            if (m_isPlayer) ServiceLocator.Unregister<Character>();
+
             this.m_Motion?.OnDispose(this);
             this.m_Driver?.OnDispose(this);
             this.m_Stats?.OnDispose(this);
@@ -70,6 +77,8 @@ namespace AF.TS.Characters
 
         protected virtual void OnDisable()
         {
+            if (m_isPlayer) ServiceLocator.Unregister<Character>();
+
             this.m_Motion?.OnDisable();
             this.m_Driver?.OnDisable();
             this.m_Stats?.OnDisable();

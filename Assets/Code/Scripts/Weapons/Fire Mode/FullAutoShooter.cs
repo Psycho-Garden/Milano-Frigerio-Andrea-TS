@@ -19,7 +19,7 @@ namespace AF.TS.Weapons
             m_isFiring = true;
         }
 
-        public void Update()
+        public void OnUpdate()
         {
             if (!m_isFiring || m_isWaitingToFire || !CanShoot())
                 return;

@@ -30,6 +30,7 @@ MonoBehaviour:
   m_bulletSpeed: 10
   m_magazineSize: 10
   m_reloadSpeed: 0
+  m_autoReload: 1
   m_bulletDamage: 10
   m_bulletRange: 100
   m_parabolicMotion:

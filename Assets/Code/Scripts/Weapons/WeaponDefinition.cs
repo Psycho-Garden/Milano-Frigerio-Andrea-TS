@@ -82,6 +82,11 @@ namespace AF.TS.Weapons
         [SerializeField, MinValue(0f)]
         private float m_reloadSpeed = 0f;
 
+        [FoldoutGroup("Ammo & Reload")]
+        [Tooltip("If true, the weapon will reload automatically when the magazine is empty.")]
+        [SerializeField]
+        private bool m_autoReload = false;
+
         // Damage -----
         [FoldoutGroup("Damage")]
         [Tooltip("Base damage dealt by each bullet.")]
@@ -209,6 +214,7 @@ namespace AF.TS.Weapons
         public float GetBulletSpeed => m_bulletSpeed;
         public int GetMagazineSize => m_magazineSize;
         public float GetReloadSpeed => m_reloadSpeed;
+        public bool GetAutoReload => m_autoReload;
 
         // Damage
         public float GetBulletDamage => m_bulletDamage;

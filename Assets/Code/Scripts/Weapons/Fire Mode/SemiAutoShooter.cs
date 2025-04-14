@@ -48,6 +48,6 @@ namespace AF.TS.Weapons
                    Time.time >= m_controller.NextShootTime;
         }
 
-        public void Update() { } // niente da fare per semi-auto
+        public void OnUpdate() { }
     }
 }

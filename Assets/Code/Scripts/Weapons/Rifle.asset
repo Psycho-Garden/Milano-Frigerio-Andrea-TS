@@ -17,6 +17,7 @@ MonoBehaviour:
   m_shootingModes:
   - rid: 5750133766806831565
   - rid: 5750133766806831566
+  - rid: 5750133833566519375
   m_gunIcon: {fileID: 0}
   m_muzzlePoint:
   - Position: {x: 0, y: 0.08, z: 0.67}
@@ -25,12 +26,13 @@ MonoBehaviour:
   - Position: {x: 0.025, y: 0.085, z: 0.13}
     Rotation: {x: 0, y: 0, z: -45}
   m_prefabBullet: {fileID: 425024253184490542, guid: da20d75e12be1f246981ec26dfde46dd, type: 3}
-  m_fireRate: 0.05
+  m_fireRate: 0.25
   m_fireDelay: 0
   m_fireCooldownSpeed: 0
   m_bulletSpeed: 10
   m_magazineSize: 100
   m_reloadSpeed: 0
+  m_autoReload: 1
   m_bulletDamage: 10
   m_bulletRange: 100
   m_parabolicMotion:
@@ -85,4 +87,7 @@ MonoBehaviour:
       data: 
     - rid: 5750133766806831566
       type: {class: FullAutoShooter, ns: AF.TS.Weapons, asm: Assembly-CSharp}
+      data: 
+    - rid: 5750133833566519375
+      type: {class: BurstShooter, ns: AF.TS.Weapons, asm: Assembly-CSharp}
       data: 

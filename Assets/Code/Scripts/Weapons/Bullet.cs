@@ -1,6 +1,7 @@
 using UnityEngine;
 using Sirenix.OdinInspector;
 using AF.TS.Utils;
+using AF.TS.Items;
 
 namespace AF.TS.Weapons
 {
@@ -24,6 +25,8 @@ namespace AF.TS.Weapons
         private float m_speed;
         private float m_range;
 
+        private float m_damage;
+
         private bool m_isInitialized = false;
 
         #endregion
@@ -37,12 +40,14 @@ namespace AF.TS.Weapons
         /// <param name="speed">Movement speed of the bullet.</param>
         /// <param name="range">Maximum distance the bullet can travel.</param>
         /// <param name="parabolicCurve">Curve to apply parabolic height offset.</param>
-        public void Init(float speed, float range, AnimationCurve parabolicCurve)
+        public void Init(float speed, float range, AnimationCurve parabolicCurve, float damage)
         {
             m_startPosition = this.transform.position;
             m_speed = speed;
             m_range = range;
             m_parabolicCurve = parabolicCurve;
+
+            m_damage = damage;
 
             m_isInitialized = true;
         }
@@ -62,6 +67,11 @@ namespace AF.TS.Weapons
         /// <param name="other">The collider the bullet has hit.</param>
         private void OnTriggerEnter(Collider other)
         {
+            if (other.TryGetComponent<IIAmTarget>(out var target))
+            {
+                target.TakeDamage(m_damage);
+            }
+
             OnDispose();
         }
 

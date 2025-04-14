@@ -4,6 +4,6 @@ namespace AF.TS.Weapons
     {
         void Init(GunController controller);
         void Shoot();
-        void Update();
+        void OnUpdate();
     }
 }
