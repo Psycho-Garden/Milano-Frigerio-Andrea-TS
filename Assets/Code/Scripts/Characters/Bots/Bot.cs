@@ -97,7 +97,7 @@ namespace AF.TS.Characters
 
         #region Private Fields -------------------------------------------------------------------------
 
-        private GunController m_gunController;
+        private NewGunController m_gunController;
         private Character m_character;
         private float m_targetLostTimer = 0f;
         private bool m_hasTargetInRange = false;
@@ -114,7 +114,7 @@ namespace AF.TS.Characters
             m_gun.transform.parent = m_gunHandle;
             m_gun.transform.SetPositionAndRotation(m_gunHandle.position, m_gunHandle.rotation);
 
-            m_gunController = m_gun.GetComponent<GunController>();
+            m_gunController = m_gun.GetComponent<NewGunController>();
             m_character = ServiceLocator.Get<Character>();
 
             foreach (var hurtbox in GetComponentsInChildren<Hurtbox>())

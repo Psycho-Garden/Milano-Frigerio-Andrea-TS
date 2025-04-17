@@ -78,7 +78,13 @@ namespace AF.TS.Weapons
         [FoldoutGroup("Debug/Gameplay")]
         [Tooltip("Shooting mode index")]
         [ShowInInspector]
-        public INewShootingMode CurrentShootingModeIndex => this.m_currentShootingMode;
+        public GunState CurrentState => this.m_currentState;
+
+        [FoldoutGroup("Debug")]
+        [FoldoutGroup("Debug/Gameplay")]
+        [Tooltip("Shooting mode index")]
+        [ShowInInspector, ReadOnly]
+        public INewShootingMode CurrentShootingMode => this.m_currentShootingMode;
 
         [FoldoutGroup("Debug/Gameplay")]
         [Tooltip("Magazine index")]
@@ -88,12 +94,25 @@ namespace AF.TS.Weapons
         [FoldoutGroup("Debug/Gameplay")]
         [Tooltip("Magazine index")]
         [ShowInInspector]
-        public int CurrentAmmo => this.m_ammoMagazines[this.m_currentMagazineIndex].CurrentAmmo;
+        public int CurrentAmmo => this.m_weaponData != null && this.m_ammoMagazines.Length > 0 ? this.m_ammoMagazines[this.m_currentMagazineIndex].CurrentAmmo : 0;
 
         [FoldoutGroup("Debug/Gameplay")]
         [Tooltip("")]
         [ShowInInspector, ReadOnly, ProgressBar(0f, 1f, DrawValueLabel = false)]
-        private float m_currentCooldown = 0f;
+        private float Cooldown
+        {
+            get
+            {
+                Sirenix.Utilities.Editor.GUIHelper.RequestRepaint();
+
+                if (this.m_weaponData != null)
+                {
+                    return this.m_weaponData.MaxCooldown > 0f ? this.m_currentCooldown / this.m_weaponData.MaxCooldown : 0f;
+                }
+
+                return 0f;
+            }
+        }
 
         [FoldoutGroup("Debug/Gameplay")]
         [Tooltip("")]
@@ -114,6 +133,11 @@ namespace AF.TS.Weapons
         [Tooltip("")]
         [Button("Changing Shooting Mode")]
         public void DebugChangeShootingMode() => TryChangeShootingMode();
+
+        [FoldoutGroup("Debug/Gameplay")]
+        [Tooltip("")]
+        [Button("Next Magazine")]
+        public void DebugNextMagazine() => TryChangeMagazine();
 
         #endregion
 
@@ -153,12 +177,11 @@ namespace AF.TS.Weapons
 
         #region Members: -------------------------------------------------------------------------------
 
-        private bool m_isFiring = false;
-        private bool m_inCooldown = false;
-        private bool m_isReloading = false;
+        private GunState m_currentState = GunState.Idle;
 
         private bool m_slidesLocked = false;
 
+        private float m_currentCooldown = 0f;
         private float m_nextShotTime = 0f;
 
         private int m_currentShootingModeIndex = 0;
@@ -191,6 +214,16 @@ namespace AF.TS.Weapons
 
         private void Start() { }
 
+        private void OnDestroy()
+        {
+            DOTween.Kill(this);
+        }
+
+        private void OnDisable()
+        {
+            DOTween.Kill(this);
+        }
+
         #endregion
 
         #region Update Methods: ------------------------------------------------------------------------
@@ -198,6 +231,14 @@ namespace AF.TS.Weapons
         private void FixedUpdate()
         {
             this.m_currentShootingMode.OnUpdate();
+
+            if (this.m_weaponData.HasCooldown && this.m_currentState != GunState.Firing)
+            {
+                float t = this.m_weaponData.MaxCooldown > 0 ? this.m_currentCooldown / this.m_weaponData.MaxCooldown : 0f;
+                this.m_currentCooldown = Mathf.Max(0f, this.m_currentCooldown - this.m_weaponData.CooldownDecay.Evaluate(t) * Time.fixedDeltaTime);
+
+                this.m_currentState = this.m_currentCooldown >= this.m_weaponData.MaxCooldown ? GunState.Cooldown : GunState.Idle;
+            }
         }
 
         #endregion
@@ -292,7 +333,7 @@ namespace AF.TS.Weapons
                 return;
             }
 
-            this.m_isFiring = true;
+            this.m_currentState = GunState.Firing;
             this.m_nextShotTime = Time.time + this.m_weaponData.ShootRate;
 
             this.m_ammoMagazines[this.m_currentMagazineIndex].GetAmmo(this.m_weaponData.BulletPerShot);
@@ -330,9 +371,16 @@ namespace AF.TS.Weapons
                 }
             }
 
-            this.m_isFiring = false;
+            if (m_weaponData.HasCooldown)
+            {
+                float t = this.m_weaponData.MaxCooldown > 0 ? this.m_currentCooldown / this.m_weaponData.MaxCooldown : 0f;
+                float increaseAmount = this.m_weaponData.CooldownIncrease.Evaluate(t);
+                this.m_currentCooldown = Mathf.Min(this.m_weaponData.MaxCooldown, this.m_currentCooldown + increaseAmount);
+            }
 
-            if(this.m_weaponData.AutoReload && this.CurrentAmmo <= 0)
+            this.m_currentState = GunState.Idle;
+
+            if (this.m_weaponData.AutoReload && this.CurrentAmmo <= 0)
             {
                 TryReload();
             }
@@ -358,14 +406,14 @@ namespace AF.TS.Weapons
 
         public void TryReload()
         {
-            if (this.m_ammoMagazines[this.m_currentMagazineIndex].Full() || this.m_isReloading)
+            if (this.m_ammoMagazines[this.m_currentMagazineIndex].Full() || this.m_currentState == GunState.Reloading)
             {
                 return;
             }
 
             OnReloadStart?.Invoke();
 
-            this.m_isReloading = true;
+            this.m_currentState = GunState.Reloading;
 
             PlaySound(this.m_weaponData.ReloadSound);
 
@@ -388,7 +436,7 @@ namespace AF.TS.Weapons
             DOVirtual.DelayedCall(reloadDuration, () =>
             {
                 this.m_ammoMagazines[this.m_currentMagazineIndex].RefillAll();
-                this.m_isReloading = false;
+                this.m_currentState = GunState.Idle;
                 OnReloadComplete?.Invoke();
             }, false);
         }
@@ -416,7 +464,7 @@ namespace AF.TS.Weapons
             this.m_currentMagazineIndex = (this.m_currentMagazineIndex + 1) % this.m_ammoMagazines.Length;
         }
 
-        public bool CanShoot() => !(this.m_isReloading || this.m_inCooldown) && Time.time >= this.m_nextShotTime && !this.m_ammoMagazines[this.m_currentMagazineIndex].Empty();
+        public bool CanShoot() => this.m_currentState == GunState.Idle && Time.time >= this.m_nextShotTime && !this.m_ammoMagazines[this.m_currentMagazineIndex].Empty();
         public float ShootRate => this.m_weaponData.ShootRate;
 
         public Point[] MuzzlePoint => m_muzzlePoint;
@@ -427,5 +475,14 @@ namespace AF.TS.Weapons
 
         #endregion
 
+    }
+
+    [Serializable]
+    public enum GunState
+    {
+        Idle,
+        Firing,
+        Reloading,
+        Cooldown
     }
 }

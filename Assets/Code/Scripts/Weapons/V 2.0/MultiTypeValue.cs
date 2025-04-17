@@ -11,8 +11,8 @@ namespace AF.TS.Weapons
 
         [SerializeField] private float m_float;
         [SerializeField] private Vector2 m_vector2;
-        [SerializeField] private AnimationCurve m_curve = new AnimationCurve();
-        [SerializeField] private MinMaxCurve m_minMaxCurve = new MinMaxCurve(1f);
+        [SerializeField] private AnimationCurve m_curve = new();
+        [SerializeField] private MinMaxCurve m_minMaxCurve = new(1f);
 
         public float Evaluate(float t = 0f) => Evaluate(t, null);
 
@@ -21,10 +21,10 @@ namespace AF.TS.Weapons
             return selectedIndex switch
             {
                 0 => m_float,
-                1 => customRandom != null
+                1 => m_curve.Evaluate(t),
+                2 => customRandom != null
                     ? Mathf.Lerp(m_vector2.x, m_vector2.y, (float)customRandom.NextDouble())
                     : UnityEngine.Random.Range(m_vector2.x, m_vector2.y),
-                2 => m_curve.Evaluate(t),
                 3 => m_minMaxCurve.Evaluate(t),
                 _ => 0f
             };
@@ -37,8 +37,8 @@ namespace AF.TS.Weapons
             return selectedIndex switch
             {
                 0 => m_float,
-                1 => Mathf.Lerp(m_vector2.x, m_vector2.y, lerp),
-                2 => m_curve.Evaluate(t),
+                1 => m_curve.Evaluate(t),
+                2 => Mathf.Lerp(m_vector2.x, m_vector2.y, lerp),
                 3 => m_minMaxCurve.mode switch
                 {
                     ParticleSystemCurveMode.Constant => m_minMaxCurve.constant,

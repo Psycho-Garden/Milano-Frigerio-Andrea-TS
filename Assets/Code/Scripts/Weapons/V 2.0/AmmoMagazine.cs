@@ -10,6 +10,7 @@ namespace AF.TS.Weapons
         [SerializeField, Required] private GameObject m_bulletPrefab;
         [SerializeField, MinValue(0)] private int m_magazineSize = 0;
         [SerializeField, PropertyRange(0, "m_magazineSize")] private int m_startAmmo = 0;
+        [SerializeField] private bool m_isInfinite = false;
 
         private int m_currentAmmo = 0;
 
@@ -20,11 +21,16 @@ namespace AF.TS.Weapons
 
         public void GetAmmo()
         {
-            this.m_currentAmmo--;
+            GetAmmo(1);
         }
 
         public void GetAmmo(int amount)
         {
+            if (m_isInfinite)
+            {
+                return;
+            }
+
             this.m_currentAmmo -= amount;
         }
 
