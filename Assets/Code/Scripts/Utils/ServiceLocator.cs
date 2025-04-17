@@ -5,6 +5,7 @@ using Sirenix.OdinInspector;
 
 namespace AF.TS.Utils
 {
+    [DefaultExecutionOrder(-100)]
     public class ServiceLocator : Singleton<ServiceLocator>
     {
         #region Fields

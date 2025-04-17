@@ -4,6 +4,8 @@ using Sirenix.OdinInspector;
 using DG.Tweening;
 using AF.TS.Weapons;
 using AF.TS.Utils;
+using System;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -67,16 +69,9 @@ namespace AF.TS.Characters
         [SerializeField] private float m_health;
 
 #if UNITY_EDITOR
-        [BoxGroup("Health System")]
-        [InlineEditor(InlineEditorModes.GUIAndPreview)]
-        [SerializeField] private Hurtbox[] m_hurtboxes = new Hurtbox[0];
 
         [BoxGroup("Health System")]
-        [Button("Refresh")]
-        private void OnGameObjectChanged()
-        {
-            m_hurtboxes = GetComponentsInChildren<Hurtbox>();
-        }
+        [SerializeField, InlineProperty, HideLabel] private HealthSystemEditorHelper m_editorHelper = new();
 
         private void SetGunPosition()
         {
@@ -88,14 +83,14 @@ namespace AF.TS.Characters
 
         private void OnValidate()
         {
-            OnGameObjectChanged();
+            m_editorHelper.OnValidate(this.gameObject);
         }
 
         private void OnTransformChildrenChanged()
         {
-            Debug.Log($"[OnTransformChildrenChanged] Children of '{name}' have changed.");
-            OnGameObjectChanged();
+            m_editorHelper.OnTransformChildrenChanged(this.gameObject);
         }
+
 #endif
 
         #endregion
@@ -253,6 +248,38 @@ namespace AF.TS.Characters
                 Gizmos.DrawCube(m_targetPosition, Vector3.one * 0.1f);
             }
         }
+    }
+
+    [Serializable]
+    public class HealthSystemEditorHelper
+    {
+#if UNITY_EDITOR
+        [BoxGroup("Health System")]
+        [InlineEditor(InlineEditorModes.GUIAndPreview)]
+        [SerializeField] private Hurtbox[] m_hurtboxes = new Hurtbox[0];
+
+        private GameObject m_target;
+
+        [BoxGroup("Health System")]
+        [Button("Refresh")]
+        private void RefreshHurtboxes()
+        {
+            m_hurtboxes = this.m_target.GetComponentsInChildren<Hurtbox>();
+        }
+
+        public void OnValidate(GameObject target)
+        {
+            this.m_target = target;
+            RefreshHurtboxes();
+        }
+
+        public void OnTransformChildrenChanged(GameObject target)
+        {
+            Debug.Log($"[OnTransformChildrenChanged] Children of '{target.name}' have changed.");
+            this.m_target = target;
+            RefreshHurtboxes();
+        }
+#endif
     }
 
     public static class FOVGizmoDrawer

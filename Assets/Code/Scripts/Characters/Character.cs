@@ -5,6 +5,7 @@ using UnityEngine;
 namespace AF.TS.Characters
 {
     [HideMonoScript]
+    [DefaultExecutionOrder(-99)]
     public class Character : MonoBehaviour
     {
         #region Exposed Members: -----------------------------------------------------------------------

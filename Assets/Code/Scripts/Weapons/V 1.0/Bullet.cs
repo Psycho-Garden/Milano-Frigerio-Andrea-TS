@@ -2,7 +2,6 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 using AF.TS.Utils;
 using AF.TS.Items;
-
 namespace AF.TS.Weapons
 {
     /// <summary>
@@ -88,7 +87,7 @@ namespace AF.TS.Weapons
             float delta = m_speed * Time.deltaTime;
             m_distanceTraveled += delta;
 
-            // Normalize distance on 100m scale for curve evaluation
+            // Normalize distance on 100m scale for Curve evaluation
             float normalized = Mathf.Clamp01(m_distanceTraveled / 100f);
             float heightOffset = m_parabolicCurve.Evaluate(normalized);
 

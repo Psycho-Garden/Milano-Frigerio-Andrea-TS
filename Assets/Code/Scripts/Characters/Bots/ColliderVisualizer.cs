@@ -18,7 +18,11 @@ namespace AF.TS.Utils
 
         [FoldoutGroup("Debug")]
         [Tooltip("Only show enabled colliders")]
-        [SerializeField, ToggleLeft] private bool m_showColliderOnlyEnabled = true;
+        [SerializeField, ToggleLeft] private bool m_showColliders = true;
+
+        [FoldoutGroup("Debug")]
+        [Tooltip("Only show enabled colliders")]
+        [SerializeField, ToggleLeft] private bool m_showCollidesrOnlyEnabled = true;
 
         [FoldoutGroup("Debug")]
         [Tooltip("The color of the gizmos")]
@@ -30,7 +34,7 @@ namespace AF.TS.Utils
 
         private void OnDrawGizmos()
         {
-            if (m_displayMode == ColliderGizmoDisplayMode.Always)
+            if (m_displayMode == ColliderGizmoDisplayMode.Always && m_showColliders)
             {
                 DrawCollidersGizmo();
             }
@@ -38,7 +42,7 @@ namespace AF.TS.Utils
 
         private void OnDrawGizmosSelected()
         {
-            if (m_displayMode == ColliderGizmoDisplayMode.OnlyWhenSelected)
+            if (m_displayMode == ColliderGizmoDisplayMode.OnlyWhenSelected && m_showColliders)
             {
                 DrawCollidersGizmo();
             }
@@ -64,7 +68,7 @@ namespace AF.TS.Utils
 
             foreach (Collider collider in colliders)
             {
-                if (!collider.enabled && m_showColliderOnlyEnabled) continue;
+                if (!collider.enabled && m_showCollidesrOnlyEnabled) continue;
 
                 // Draw the Collider based on its type
                 if (collider is BoxCollider boxCollider)
