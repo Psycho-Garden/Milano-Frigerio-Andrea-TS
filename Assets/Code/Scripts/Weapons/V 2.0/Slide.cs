@@ -8,10 +8,12 @@ namespace AF.TS.Weapons
     public class Slide
     {
         [Tooltip("")]
-        [SerializeField] private Transform m_slideTransform;
+        [SerializeField, ChildGameObjectsOnly] 
+        private Transform m_slideTransform;
 
         [Tooltip(""), Unit(Units.Meter, Units.Centimeter)]
-        [SerializeField] private float m_slideEscursion = 0f;
+        [SerializeField] 
+        private float m_slideEscursion = 0f;
 
         public Transform SlideTransform => m_slideTransform;
         public float SlideEscursion => m_slideEscursion;

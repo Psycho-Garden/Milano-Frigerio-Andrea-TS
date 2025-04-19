@@ -14,7 +14,7 @@ namespace AF.TS.Weapons
         #region Exposed Members: -----------------------------------------------------------------------
 
         [InfoBox("The <color=red>Red</color> fields are to be implemented", InfoMessageType.Warning)] // TODO: removed when implemented all fields
-        [SerializeField, InlineEditor(InlineEditorObjectFieldModes.Boxed), Required]
+        [SerializeField, InlineEditor(InlineEditorObjectFieldModes.Boxed), Required, AssetsOnly]
         private WeaponData m_weaponData;
 
         [FoldoutGroup("Magazine Settings")]
@@ -361,7 +361,7 @@ namespace AF.TS.Weapons
                     );
                 }
 
-                GunUtilities.Shoot(
+                GunUtilities.Shoot2(
                     this.transform,
                     this.m_ammoMagazines[this.m_currentMagazineIndex].BulletPrefab.name,
                     muzzlePoint.Position,

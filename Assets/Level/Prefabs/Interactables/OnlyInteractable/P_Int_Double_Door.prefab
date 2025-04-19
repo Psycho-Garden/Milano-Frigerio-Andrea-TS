@@ -242,9 +242,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 519a49cc60e1e6b49b45dbe98fd6ab79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_isInteractableOnce: 0
+  m_maxPerformances: 1
   m_onInteracted:
     m_PersistentCalls:
       m_Calls: []
+  m_colorConnection: {r: 1, g: 0, b: 0, a: 1}
   m_clip: {fileID: 0}
   m_spatial3D: 1
   m_pivotDx: {fileID: 7859562064501181127}

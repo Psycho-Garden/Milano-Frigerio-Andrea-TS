@@ -28,7 +28,7 @@ namespace AF.TS.Weapons
 
         [BoxGroup("Base Definition")]
         [Tooltip("Available shooting modes for this weapon (e.g., semi-auto, burst, full-auto).")]
-        [SerializeReference]
+        [SerializeReference, PolymorphicDrawerSettings(ShowBaseType = false)]
         private INewShootingMode[] m_shootingMode = new ShootModeBase[0];
 
         #endregion
@@ -91,12 +91,12 @@ namespace AF.TS.Weapons
 
         [FoldoutGroup("VFX")]
         [Tooltip("Prefab spawned at the muzzle when the weapon fires.")]
-        [SerializeField]
+        [SerializeField, AssetsOnly]
         private GameObject m_muzzleFlashPrefab;
 
         [FoldoutGroup("VFX")]
         [Tooltip("Prefab of the casing ejected from the weapon.")]
-        [SerializeField]
+        [SerializeField, AssetsOnly]
         private GameObject m_casingPrefab;
 
         #endregion

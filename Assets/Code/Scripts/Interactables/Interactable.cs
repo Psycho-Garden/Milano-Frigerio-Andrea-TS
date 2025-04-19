@@ -1,35 +1,84 @@
-using System;
+﻿using System;
 using UnityEngine;
 using UnityEngine.Events;
 using Sirenix.OdinInspector;
 using AF.TS.Utils;
 using AF.TS.Weapons;
+using Sirenix.OdinInspector.Editor;
+using Sirenix.Utilities.Editor;
 
 namespace AF.TS.Items
 {
     [HideMonoScript]
     public class Interactable : MonoBehaviour, IInteractable
     {
+        const bool HARD_BLOCK_SELF_REFERENCE = true;
+
         [Serializable]
         public class TriggerEnterEvent : UnityEvent<Transform> { }
 
-        [FoldoutGroup("Events", Expanded = true)]
-        [Tooltip("Event triggered when the interactable is interacted"), PropertyOrder(1)]
+        [HorizontalGroup("Events/count", width: 16f), PropertyOrder(1)]
+        [Tooltip("")]
+        [SerializeField, HideLabel]
+        protected bool m_isInteractableOnce = false;
+
+        [HorizontalGroup("Events/count"), PropertyOrder(1)]
+        [Tooltip("Max number of ricochets allowed.")]
+        [SerializeField, EnableIf("m_isInteractableOnce"), MinValue(0)]
+        private int m_maxPerformances = 1;
+
+        [FoldoutGroup("Events", Expanded = true), PropertyOrder(1)]
+        [Tooltip("Event triggered when the interactable is interacted")]
         [SerializeField]
         protected TriggerEnterEvent m_onInteracted = new();
 
-        [FoldoutGroup("Events")]
-        [Tooltip("Color of the connections"), PropertyOrder(1)]
+        [FoldoutGroup("Events"), PropertyOrder(1)]
+        [Tooltip("Color of the connections")]
         [SerializeField, ColorPalette]
         protected Color m_colorConnection = Color.red;
 
-        [FoldoutGroup("Events")]
-        [Tooltip("Test interactable"), PropertyOrder(1)]
+        private int m_interactedCount = 0;
+
+        [FoldoutGroup("Events"), PropertyOrder(1)]
+        [Tooltip("Test interactable")]
         [Button("Interact", ButtonSizes.Medium)]
         public virtual void Interact()
         {
+            if (m_interactedCount++ >= m_maxPerformances && m_isInteractableOnce)
+            {
+                return;
+            }
+
             this.m_onInteracted.Invoke(this.transform);
         }
+
+
+        private void OnValidate()
+        {
+#if UNITY_EDITOR
+            for (int i = 0; i < m_onInteracted.GetPersistentEventCount(); i++)
+            {
+                var target = m_onInteracted.GetPersistentTarget(i);
+                if (target == this)
+                {
+                    Debug.LogWarning($"[<color=green>Interactable</color>] '{name}' has a <color=red>self-reference in m_onInteracted — this may cause recursion!</color>", this);
+                }
+            }
+
+#endif
+#if UNITY_EDITOR && HARD_BLOCK_SELF_REFERENCE
+            for (int i = m_onInteracted.GetPersistentEventCount() - 1; i >= 0; i--)
+            {
+                if (m_onInteracted.GetPersistentTarget(i) == this)
+                {
+                    Debug.LogWarning("<color=yellow>Removed self-referencing listener to prevent recursion.</color>\n[This is disabled in the code]");
+                    UnityEditor.Events.UnityEventTools.RemovePersistentListener(m_onInteracted, i);
+                    UnityEditor.EditorUtility.SetDirty(this);
+                }
+            }
+#endif
+        }
+
 
         public virtual void OnDrawGizmosSelected()
         {
@@ -60,6 +109,7 @@ namespace AF.TS.Items
     {
         void Interact();
     }
+
 }
 
 namespace AF.TS.Audio
@@ -80,13 +130,13 @@ namespace AF.TS.Audio
         {
             if (clip == null)
             {
-                Debug.LogError("Audio clip is null");
+                Debug.LogWarning("Audio clip is null");
                 return null;
             }
 
             if (volume <= 0)
             {
-                Debug.LogError("Volume is <= 0");
+                Debug.LogWarning("Volume is <= 0");
                 return null;
             }
 

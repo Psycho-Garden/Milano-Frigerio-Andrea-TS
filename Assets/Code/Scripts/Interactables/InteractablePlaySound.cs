@@ -8,18 +8,21 @@ namespace AF.TS.Items
     {
         [FoldoutGroup("Sound")]
         [Tooltip("The sound to play")]
-        [SerializeField] private AudioClip m_clip;
+        [SerializeField]
+        private AudioClip m_clip;
 
         [FoldoutGroup("Sound")]
         [Tooltip("If true, the sound will be played in 3D, otherwise it will be played in 2D")]
-        [SerializeField] private bool m_spatial3D = true;
+        [SerializeField]
+        private bool m_spatial3D = true;
 
         public override void Interact()
         {
             base.Interact();
             AudioSource audioSource = AudioManager.TrySound(m_clip);
+            audioSource.transform.position = this.transform.position;
 
-            if(audioSource != null && m_spatial3D)
+            if (audioSource != null && m_spatial3D)
             {
                 audioSource.spatialBlend = m_spatial3D ? 1f : 0f;
             }

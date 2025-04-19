@@ -27,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919476725167175478}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -27.322, y: 0, z: -19.938}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -100,9 +100,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 519a49cc60e1e6b49b45dbe98fd6ab79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_isInteractableOnce: 0
+  m_maxPerformances: 1
   m_onInteracted:
     m_PersistentCalls:
       m_Calls: []
+  m_colorConnection: {r: 1, g: 0, b: 0, a: 1}
   m_clip: {fileID: 0}
   m_spatial3D: 1
   m_pivotDx: {fileID: 3078684085935914569}

@@ -161,8 +161,8 @@ namespace AF.TS.Weapons
 
         [FoldoutGroup("Effects Settings")]
         [Tooltip("Visual effect played on impact. Optional, can be null.")]
-        [SerializeField]
-        private ParticleSystem m_impactEffect;
+        [SerializeField, AssetsOnly]
+        private GameObject m_impactEffect;
 
         #endregion
 
@@ -264,7 +264,7 @@ namespace AF.TS.Weapons
 
         public AudioClip ImpactSound => m_impactSound;
 
-        public ParticleSystem ImpactEffect => m_impactEffect;
+        public GameObject ImpactEffect => m_impactEffect;
 
         #endregion
 

@@ -92,5 +92,16 @@ namespace AF.TS.Weapons
             return bullet.GetComponent<Bullet>();
         }
 
+        public static void Shoot2(Transform transform, string prefabName, Vector3 position, Vector3 rotation)
+        {
+            GameObject bullet = ServiceLocator.Get<ObjectPooler>().Get(prefabName);
+
+            bullet.transform.SetPositionAndRotation(
+                transform.TransformPoint(position),
+                transform.rotation * Quaternion.Euler(rotation)
+                );
+
+            bullet.GetComponent<NewBullet>().Init();
+        }
     }
 }

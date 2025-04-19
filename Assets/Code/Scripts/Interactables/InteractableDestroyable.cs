@@ -9,11 +9,13 @@ namespace AF.TS.Items
     {
         [FoldoutGroup("VFX")]
         [Tooltip("Particles to spawn when the object is destroyed")]
-        [SerializeField] private GameObject m_object = null;
+        [SerializeField, AssetsOnly] 
+        private GameObject m_object = null;
 
         [FoldoutGroup("VFX")]
         [Tooltip("Time to wait before destroying the object"), Unit(Units.Second)]
-        [SerializeField, MinValue(0f)] private float m_duration = 1f;
+        [SerializeField, MinValue(0f)] 
+        private float m_duration = 1f;
 
         public virtual void Start()
         {

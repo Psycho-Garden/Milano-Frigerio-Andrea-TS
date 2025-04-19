@@ -12,7 +12,7 @@ namespace AF.TS.Items
         private Transform m_button;
 
         [FoldoutGroup("VFX")]
-        [Tooltip("Distance the button moves when pressed"), Unit(Units.Centimeter)]
+        [Tooltip("Distance the button moves when pressed"), Unit(Units.Meter, Units.Centimeter)]
         [SerializeField]
         private float m_escursion = 1f;
 
@@ -79,7 +79,7 @@ namespace AF.TS.Items
         private void BasicAnimation()
         {
             Vector3 position = this.m_button.localPosition;
-            float m_targetY = position.y - Mathf.Abs(Escursion);
+            float m_targetY = position.y - Mathf.Abs(this.m_escursion);
 
             if (this.m_isToggle)
             {
@@ -102,16 +102,14 @@ namespace AF.TS.Items
 
         private void PunchAnimation()
         {
-            Vector3 m_punch = new Vector3(0f, -Mathf.Abs(Escursion), 0f);
+            Vector3 m_punch = new Vector3(0f, -Mathf.Abs(this.m_escursion), 0f);
             this.m_button.DOPunchPosition(m_punch, this.m_duration, 5, 0.5f);
         }
 
         private void ShakeAnimation()
         {
-            this.m_button.DOShakePosition(this.m_duration, new Vector3(0f, Escursion * 0.5f, 0f), 10, 90f, false, true);
+            this.m_button.DOShakePosition(this.m_duration, new Vector3(0f, this.m_escursion * 0.5f, 0f), 10, 90f, false, true);
         }
-
-        private float Escursion => this.m_escursion / 100f;
 
         /// <summary>
         /// Sets if the button is toggle

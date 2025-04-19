@@ -121,11 +121,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fd9b4011e0ab394dba97b5be635093c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_isInteractableOnce: 0
+  m_maxPerformances: 1
   m_onInteracted:
     m_PersistentCalls:
       m_Calls: []
   m_colorConnection: {r: 1, g: 0, b: 0, a: 1}
-  m_clip: {fileID: 0}
+  m_clip: {fileID: 8300000, guid: fa4b81061da8a5546b595748355dd26f, type: 3}
   m_spatial3D: 1
   m_object: {fileID: 5174272382517532564, guid: 96188bafcdbff034a902d6100ab786d9, type: 3}
   m_duration: 1

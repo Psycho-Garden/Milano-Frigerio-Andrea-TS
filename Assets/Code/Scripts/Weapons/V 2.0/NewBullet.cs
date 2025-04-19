@@ -15,7 +15,7 @@ namespace AF.TS.Weapons
 
         [BoxGroup("Reference")]
         [Tooltip("The bullet's data")]
-        [SerializeField, InlineEditor(InlineEditorObjectFieldModes.Foldout)]
+        [SerializeField, InlineEditor(InlineEditorObjectFieldModes.Foldout), AssetsOnly, Required]
         private BulletData m_bulletData;
 
         [BoxGroup("Reference")]
@@ -115,10 +115,13 @@ namespace AF.TS.Weapons
 
         private void Start() { }
 
-        private void OnEnable()
+        public void Init()
         {
             this.m_bulletBehaviour?.OnStart(this);
+        }
 
+        private void OnEnable()
+        {
             this.m_timeAlive = 0f;
             this.m_travelledDistance = 0f;
         }

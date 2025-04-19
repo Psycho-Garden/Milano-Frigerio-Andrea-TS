@@ -8,7 +8,7 @@ namespace AF.TS.Items
     {
         [FoldoutGroup("VFX")]
         [Tooltip("Pivot to animate")]
-        [SerializeField, Required]
+        [SerializeField, Required, SceneObjectsOnly]
         private Transform m_pivot = null;
 
         [FoldoutGroup("VFX")]
