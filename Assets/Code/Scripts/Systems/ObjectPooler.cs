@@ -56,17 +56,20 @@ namespace AF.TS.Weapons
         /// </summary>
         public void InitializePool(GameObject prefab, int initialSize)
         {
+            if(prefab == null) return;
+
             if (!m_poolDictionary.ContainsKey(prefab))
+            {
                 m_poolDictionary[prefab] = new Queue<GameObject>();
 
-            for (int i = 0; i < initialSize; i++)
-            {
-                var newObject = CreateObject(prefab);
-                newObject.SetActive(false);
-                m_poolDictionary[prefab].Enqueue(newObject);
+                for (int i = 0; i < initialSize; i++)
+                {
+                    var newObject = CreateObject(prefab);
+                    newObject.SetActive(false);
+                    m_poolDictionary[prefab].Enqueue(newObject);
+                }
             }
         }
-
 
         /// <summary>
         /// Get an object from the pool, or create a new one if the pool is empty.

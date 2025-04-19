@@ -3,6 +3,7 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 using DG.Tweening;
 using AF.TS.Utils;
+using AF.TS.Audio;
 
 namespace AF.TS.Weapons
 {
@@ -237,7 +238,17 @@ namespace AF.TS.Weapons
                 float t = this.m_weaponData.MaxCooldown > 0 ? this.m_currentCooldown / this.m_weaponData.MaxCooldown : 0f;
                 this.m_currentCooldown = Mathf.Max(0f, this.m_currentCooldown - this.m_weaponData.CooldownDecay.Evaluate(t) * Time.fixedDeltaTime);
 
-                this.m_currentState = this.m_currentCooldown >= this.m_weaponData.MaxCooldown ? GunState.Cooldown : GunState.Idle;
+                this.m_currentState = this.m_currentCooldown >= this.m_weaponData.MaxCooldown * 0.9f ? GunState.Cooldown : GunState.Idle;
+            }
+
+            if (!this.m_weaponData.HasCooldown && this.m_currentCooldown != 0f)
+            {
+                if(this.m_currentState == GunState.Cooldown)
+                {
+                    this.m_currentState = GunState.Idle;
+                }
+
+                this.m_currentCooldown = 0f;
             }
         }
 
@@ -254,7 +265,7 @@ namespace AF.TS.Weapons
             }
             else
             {
-                PlaySound(this.m_weaponData.EmptySound);
+                AudioManager.TrySound(this.m_weaponData.EmptySound).transform.SetPositionAndRotation(transform.position, transform.rotation);
             }
         }
 
@@ -275,7 +286,7 @@ namespace AF.TS.Weapons
 
         public void Feedback()
         {
-            PlaySound(this.m_weaponData.ShootSound);
+            AudioManager.TrySound(this.m_weaponData.ShootSound).transform.SetPositionAndRotation(transform.position, transform.rotation);
 
             if (this.m_slides.Length <= 0)
             {
@@ -388,20 +399,6 @@ namespace AF.TS.Weapons
 
         #endregion
 
-        #region Private Methods: -----------------------------------------------------------------------
-
-        private void PlaySound(AudioClip clip)
-        {
-            if (clip == null)
-            {
-                return;
-            }
-
-            ServiceLocator.Get<ObjectPooler>().Get("AudioSource", clip.length).GetComponent<AudioSource>().PlayOneShot(clip);
-        }
-
-        #endregion
-
         #region Public Methods: ------------------------------------------------------------------------
 
         public void TryReload()
@@ -415,7 +412,7 @@ namespace AF.TS.Weapons
 
             this.m_currentState = GunState.Reloading;
 
-            PlaySound(this.m_weaponData.ReloadSound);
+            AudioManager.TrySound(this.m_weaponData.ReloadSound).transform.SetPositionAndRotation(transform.position, transform.rotation);
 
             if (this.m_slidesLocked && this.m_asSlideLock)
             {
@@ -461,11 +458,24 @@ namespace AF.TS.Weapons
                 return;
             }
 
+            if (this.m_asSlideLock)
+            {
+                foreach (Slide slide in this.m_slides)
+                {
+                    GunUtilities.AnimateSlide(
+                       slide.SlideTransform,
+                       -slide.SlideEscursion,
+                       0.1f
+                    );
+                }
+            }
+
             this.m_currentMagazineIndex = (this.m_currentMagazineIndex + 1) % this.m_ammoMagazines.Length;
         }
 
         public bool CanShoot() => this.m_currentState == GunState.Idle && Time.time >= this.m_nextShotTime && !this.m_ammoMagazines[this.m_currentMagazineIndex].Empty();
         public float ShootRate => this.m_weaponData.ShootRate;
+        public float NextShotTime => this.m_nextShotTime;
 
         public Point[] MuzzlePoint => m_muzzlePoint;
         public Point[] ExtractorPoint => m_extractorPoint;

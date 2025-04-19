@@ -3,6 +3,7 @@ using UnityEngine.Events;
 using System;
 using Sirenix.OdinInspector;
 using AF.TS.Utils;
+using AF.TS.Items;
 
 namespace AF.TS.Weapons
 {
@@ -112,14 +113,11 @@ namespace AF.TS.Weapons
 
         #region Initialization -----------------------------------------------------------------
 
-        private void Start()
-        {
-            this.m_bulletBehaviour?.OnStart(this);
-        }
+        private void Start() { }
 
         private void OnEnable()
         {
-            this.m_bulletBehaviour?.OnEnable();
+            this.m_bulletBehaviour?.OnStart(this);
 
             this.m_timeAlive = 0f;
             this.m_travelledDistance = 0f;
@@ -194,6 +192,10 @@ namespace AF.TS.Weapons
             else if(other.TryGetComponent(out IInteractable<string> interactable))
             {
                 interactable.Interact(this.gameObject.tag);
+            }
+            else if (other.TryGetComponent(out IInteractable interactable2))
+            {
+                interactable2.Interact();
             }
 
             if (this.m_bulletData.ImpactEffect != null)
