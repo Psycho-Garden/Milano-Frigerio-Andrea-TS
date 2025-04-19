@@ -105,3 +105,7 @@ namespace AF.TS.Weapons
         }
     }
 }
+
+namespace AD.TS.UI.HUD
+{
+}

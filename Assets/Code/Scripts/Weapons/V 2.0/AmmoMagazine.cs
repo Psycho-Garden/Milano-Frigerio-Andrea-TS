@@ -7,10 +7,25 @@ namespace AF.TS.Weapons
     [System.Serializable]
     public class AmmoMagazine
     {
-        [SerializeField, Required] private GameObject m_bulletPrefab;
-        [SerializeField, MinValue(0)] private int m_magazineSize = 0;
-        [SerializeField, PropertyRange(0, "m_magazineSize")] private int m_startAmmo = 0;
-        [SerializeField] private bool m_isInfinite = false;
+        [FoldoutGroup("Settings")]
+        [Tooltip("The bullet prefab")]
+        [SerializeField, Required, AssetsOnly, RequiredIn(PrefabKind.All)] 
+        private GameObject m_bulletPrefab;
+
+        [FoldoutGroup("Settings")]
+        [Tooltip("The maximum amount of ammo the magazine can hold")]
+        [SerializeField, MinValue(0)] 
+        private int m_magazineSize = 0;
+
+        [FoldoutGroup("Settings")]
+        [Tooltip("The amount of ammo the magazine starts with")]
+        [SerializeField, PropertyRange(0, "m_magazineSize")] 
+        private int m_startAmmo = 0;
+
+        [FoldoutGroup("Settings")]
+        [Tooltip("If true, the magazine is infinite")]
+        [SerializeField] 
+        private bool m_isInfinite = false;
 
         private int m_currentAmmo = 0;
 
@@ -53,7 +68,7 @@ namespace AF.TS.Weapons
         public bool HasSpace(int amount) => this.m_currentAmmo - amount >= 0;
 
         public GameObject BulletPrefab => this.m_bulletPrefab;
-        public int MagazineSize => this.m_magazineSize;
+        public int MagazineCapacity => this.m_magazineSize;
         public int CurrentAmmo => this.m_currentAmmo;
 
     }

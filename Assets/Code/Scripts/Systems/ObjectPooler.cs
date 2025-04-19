@@ -6,6 +6,7 @@ using AF.TS.Utils;
 
 namespace AF.TS.Weapons
 {
+    [DefaultExecutionOrder(-99)]
     public class ObjectPooler : MonoBehaviour
     {
         #region Fields ------------------------------------------------------------------

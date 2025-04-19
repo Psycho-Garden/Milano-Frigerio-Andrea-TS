@@ -2,7 +2,6 @@ using System;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using DG.Tweening;
-using AF.TS.Utils;
 using AF.TS.Audio;
 
 namespace AF.TS.Weapons

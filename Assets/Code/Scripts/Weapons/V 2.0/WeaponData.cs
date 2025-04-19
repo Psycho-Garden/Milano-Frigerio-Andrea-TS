@@ -91,12 +91,12 @@ namespace AF.TS.Weapons
 
         [FoldoutGroup("VFX")]
         [Tooltip("Prefab spawned at the muzzle when the weapon fires.")]
-        [SerializeField, AssetsOnly]
+        [SerializeField, AssetsOnly, RequiredIn(PrefabKind.All)]
         private GameObject m_muzzleFlashPrefab;
 
         [FoldoutGroup("VFX")]
         [Tooltip("Prefab of the casing ejected from the weapon.")]
-        [SerializeField, AssetsOnly]
+        [SerializeField, AssetsOnly, RequiredIn(PrefabKind.All)]
         private GameObject m_casingPrefab;
 
         #endregion

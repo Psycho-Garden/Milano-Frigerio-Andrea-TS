@@ -9,7 +9,7 @@ namespace AF.TS.Items
     {
         [FoldoutGroup("VFX")]
         [Tooltip("Particles to spawn when the object is destroyed")]
-        [SerializeField, AssetsOnly] 
+        [SerializeField, AssetsOnly, RequiredIn(PrefabKind.All)] 
         private GameObject m_object = null;
 
         [FoldoutGroup("VFX")]
