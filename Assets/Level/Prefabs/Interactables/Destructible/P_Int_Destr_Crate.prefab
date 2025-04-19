@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4036338243443969204}
   - component: {fileID: 2688673808789076209}
   - component: {fileID: 6827837442716468858}
-  - component: {fileID: 2917010904592038776}
+  - component: {fileID: 1395453774968105078}
   - component: {fileID: 2521086497837840700}
   m_Layer: 0
   m_Name: P_Int_Destr_Crate
@@ -28,7 +28,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2551285635472114412}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -24.193, y: 0, z: -19.444}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -88,8 +88,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &2917010904592038776
-MeshCollider:
+--- !u!65 &1395453774968105078
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -106,10 +106,9 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: 2d56fe2ad841a4f429c64626c08eaae5, type: 3}
+  serializedVersion: 3
+  m_Size: {x: 0.9964996, y: 0.99649537, z: 0.9964958}
+  m_Center: {x: 0, y: -0.00000016391277, z: 0}
 --- !u!114 &2521086497837840700
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -125,6 +124,7 @@ MonoBehaviour:
   m_onInteracted:
     m_PersistentCalls:
       m_Calls: []
+  m_colorConnection: {r: 1, g: 0, b: 0, a: 1}
   m_clip: {fileID: 0}
   m_spatial3D: 1
   m_object: {fileID: 5174272382517532564, guid: 96188bafcdbff034a902d6100ab786d9, type: 3}

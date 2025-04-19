@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5078896013590690915}
   - component: {fileID: 7290738359981363957}
   - component: {fileID: 651761990199814197}
-  - component: {fileID: 2697234570774735279}
+  - component: {fileID: 5878007867441693811}
   - component: {fileID: 7422014649172320682}
   m_Layer: 0
   m_Name: P_Int_Mario_Tube
@@ -88,8 +88,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &2697234570774735279
-MeshCollider:
+--- !u!136 &5878007867441693811
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -106,10 +106,11 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: 4c2d4014b78a5fb45a38f5247ed76183, type: 3}
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 4
+  m_Direction: 0
+  m_Center: {x: -2.0000005, y: 0, z: 0.0015705824}
 --- !u!114 &7422014649172320682
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -125,5 +126,6 @@ MonoBehaviour:
   m_onInteracted:
     m_PersistentCalls:
       m_Calls: []
+  m_colorConnection: {r: 1, g: 0, b: 0, a: 1}
   m_clip: {fileID: 8300000, guid: 05cdec92580856149b72a16cf66f0f92, type: 3}
   m_spatial3D: 1

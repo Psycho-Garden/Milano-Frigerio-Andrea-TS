@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4118247831937506289}
   - component: {fileID: 6640203231136079846}
   - component: {fileID: 4776217659678274764}
-  - component: {fileID: 481919777169070884}
+  - component: {fileID: 233786478737905358}
   - component: {fileID: 7993461899413198458}
   m_Layer: 0
   m_Name: P_Int_Destr_Pot
@@ -88,8 +88,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &481919777169070884
-MeshCollider:
+--- !u!136 &233786478737905358
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -106,10 +106,11 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: 439aa6d16e8b75647a47ca5a42c434d6, type: 3}
+  serializedVersion: 2
+  m_Radius: 0.123103455
+  m_Height: 0.36162925
+  m_Direction: 1
+  m_Center: {x: 0, y: -0.000000007450581, z: 0}
 --- !u!114 &7993461899413198458
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -125,6 +126,7 @@ MonoBehaviour:
   m_onInteracted:
     m_PersistentCalls:
       m_Calls: []
+  m_colorConnection: {r: 1, g: 0, b: 0, a: 1}
   m_clip: {fileID: 0}
   m_spatial3D: 1
   m_object: {fileID: 5174272382517532564, guid: 96188bafcdbff034a902d6100ab786d9, type: 3}
