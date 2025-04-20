@@ -40,7 +40,7 @@ namespace AF.TS.Items
 
         public override void Interact()
         {
-            if (this.m_isDisabled)
+            if (this.m_isDisabled || this.m_isPressed)
                 return;
 
             base.Interact();
@@ -53,7 +53,7 @@ namespace AF.TS.Items
             if (this.m_button == null)
                 return;
 
-            this.m_button.DOKill();
+            this.m_button.DOComplete();
 
             switch (this.m_animationType)
             {

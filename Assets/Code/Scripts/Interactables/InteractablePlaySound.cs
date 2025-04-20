@@ -19,6 +19,12 @@ namespace AF.TS.Items
         public override void Interact()
         {
             base.Interact();
+
+            if (m_clip == null)
+            {
+                return;
+            }
+
             AudioSource audioSource = AudioManager.TrySound(m_clip);
             audioSource.transform.position = this.transform.position;
 
@@ -26,6 +32,7 @@ namespace AF.TS.Items
             {
                 audioSource.spatialBlend = m_spatial3D ? 1f : 0f;
             }
+
         }
     }
 }
