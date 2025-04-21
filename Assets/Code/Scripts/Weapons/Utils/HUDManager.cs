@@ -2,9 +2,12 @@
 using UnityEngine.UI;
 using TMPro;
 using Sirenix.OdinInspector;
+using AF.TS.Characters;
+using AF.TS.Utils;
 
 namespace AD.TS.UI.HUD
 {
+    [HideMonoScript]
     public class HUDManager : MonoBehaviour
     {
         [FoldoutGroup("Character Stats")]
@@ -32,6 +35,11 @@ namespace AD.TS.UI.HUD
         [SerializeField, Required, SceneObjectsOnly]
         private TMP_Text m_currentAmmoMagazineCapacity;
 
+        [ShowInInspector, ReadOnly]
+        private Character m_targetCharacter;
+
+        private void Awake() => m_targetCharacter = ServiceLocator.Get<Character>();
+
         private void Start()
         {
             m_healthBar.value = 1f;
@@ -40,12 +48,14 @@ namespace AD.TS.UI.HUD
 
         private void OnEnable()
         {
-            
+            m_targetCharacter.Stats.OnStaminaChanged += UpdateStamina;
+            m_targetCharacter.Stats.OnHealthChanged += UpdateHealth;
         }
 
         private void OnDisable()
         {
-            
+            m_targetCharacter.Stats.OnStaminaChanged -= UpdateStamina;
+            m_targetCharacter.Stats.OnHealthChanged -= UpdateHealth;
         }
 
         #region Private Functions --------------------------------------------------------

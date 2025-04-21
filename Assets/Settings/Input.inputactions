@@ -2,13 +2,13 @@
     "name": "Input",
     "maps": [
         {
-            "name": "PlayerControls",
+            "name": "Controls",
             "id": "22b0873b-ddda-440e-9175-2e11f058afb2",
             "actions": [
                 {
                     "name": "Move",
                     "type": "Value",
-                    "id": "457f0d26-5f60-4305-a235-5bd002a99279",
+                    "id": "54083a6f-2e77-464e-bfba-62c184249db4",
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
@@ -33,7 +33,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Crounch",
+                    "name": "Crouch",
                     "type": "Button",
                     "id": "0c19d282-221c-4ecb-8c4e-4682195571f1",
                     "expectedControlType": "",
@@ -58,91 +58,9 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
-                },
-                {
-                    "name": "Menu",
-                    "type": "Button",
-                    "id": "4838c907-3a85-4288-8376-27b3c095561d",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Aim",
-                    "type": "Button",
-                    "id": "b1478dd9-618a-43d5-86d3-1ed0f5ca8e4b",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Shoot",
-                    "type": "Button",
-                    "id": "2faa1ceb-ffe5-44c4-9574-9c2819ef2e30",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 }
             ],
             "bindings": [
-                {
-                    "name": "2D Vector",
-                    "id": "3017037f-46e5-441e-88b3-1bc7e6e9e923",
-                    "path": "2DVector",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Move",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "up",
-                    "id": "2445eda4-7fed-4795-9175-a970d6599a4e",
-                    "path": "<Keyboard>/w",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Move",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "down",
-                    "id": "921cb1e8-bfc9-4c15-9664-e30adad4623b",
-                    "path": "<Keyboard>/s",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Move",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "left",
-                    "id": "c938bbbb-2d4e-4098-af10-ff83beee2c0f",
-                    "path": "<Keyboard>/a",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Move",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "right",
-                    "id": "c3d693d7-bfea-43ed-b17d-beec4262e001",
-                    "path": "<Keyboard>/d",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Move",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
                 {
                     "name": "",
                     "id": "90d9382f-496a-462b-8699-e374c0d12050",
@@ -172,7 +90,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Crounch",
+                    "action": "Crouch",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -199,8 +117,80 @@
                     "isPartOfComposite": false
                 },
                 {
+                    "name": "2D Vector",
+                    "id": "3fb2dbc2-9631-4398-9669-dedd84e98c0b",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "7f163c7d-ee57-4737-9ac7-04704d6613b0",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "8b7dcacc-7801-4131-b076-84319d72782b",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "042e3038-631e-4974-9a0a-8f62f208f82d",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "c1f4622a-acad-4713-b2e7-cfa6c5bed19a",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                }
+            ]
+        },
+        {
+            "name": "Menu",
+            "id": "b9373310-9f66-4bdb-8753-1b3039502c53",
+            "actions": [
+                {
+                    "name": "Menu",
+                    "type": "Button",
+                    "id": "490bd84d-04dc-4da0-bae2-1797d6ac4c99",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
                     "name": "",
-                    "id": "5a687a39-4cf6-456f-bd02-619a0cb73911",
+                    "id": "b57a7b02-763a-4935-8a03-b0fd49be9262",
                     "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
@@ -208,10 +198,110 @@
                     "action": "Menu",
                     "isComposite": false,
                     "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Weapon",
+            "id": "108e4a04-7ff8-47bf-8700-b2eacf7bbf30",
+            "actions": [
+                {
+                    "name": "Shoot",
+                    "type": "Button",
+                    "id": "b78e5c34-ef28-4bf9-a3a5-b93f001c74ef",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Aim",
+                    "type": "Button",
+                    "id": "c94e126b-3570-4d52-a4f2-789ddbc17478",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Reload",
+                    "type": "Button",
+                    "id": "b5f469bc-f1bc-447c-a98f-54d13f1c0642",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "PrimaryGun",
+                    "type": "Button",
+                    "id": "f21d92cc-e844-433b-aaa6-e40adc0afc32",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SecondaryGun",
+                    "type": "Button",
+                    "id": "bc1aea28-b668-41a5-9e97-dcd188a2dfe8",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TertiaryGun",
+                    "type": "Button",
+                    "id": "4b40603c-79cb-47c0-9d4f-b965e9b33504",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SwitchWeapon",
+                    "type": "Button",
+                    "id": "9789d3c1-30ea-4970-ad92-dd531f9118b1",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SwitchAmmoMagazine",
+                    "type": "Button",
+                    "id": "2c30684f-2eab-4884-b5fb-414a4036f745",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SwitchShootingMode",
+                    "type": "Button",
+                    "id": "15186a63-3939-4052-b519-5e6b49cb12a8",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "29f1f69c-e005-4c99-91db-47e10edf83ba",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Shoot",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "fa296312-77f9-4a94-b296-ef83593dc28d",
+                    "id": "c9a2dd99-cb4c-4a01-b67e-73ff50d44b0f",
                     "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",
@@ -222,12 +312,78 @@
                 },
                 {
                     "name": "",
-                    "id": "0b99d088-e22f-429a-a36e-47c6e6631f07",
-                    "path": "<Mouse>/leftButton",
+                    "id": "0d45d807-cfc6-4c44-bf8e-59786a8538a2",
+                    "path": "<Keyboard>/r",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Shoot",
+                    "action": "Reload",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "46e72324-7ccc-46ff-8346-d1ba761f41d8",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PrimaryGun",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "db9a72e7-847b-49f2-9b7b-0bd1e5e8fb3f",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SecondaryGun",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2289a3e2-67fd-45cc-aaf8-ba568406ec11",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TertiaryGun",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cd1fccce-1c92-4a49-8ac9-3c574229d6a1",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SwitchShootingMode",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7bf16278-2ce3-4a1b-8814-133e9adb9fc2",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SwitchAmmoMagazine",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "103deeca-3bac-4043-b907-6887083aba01",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SwitchWeapon",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

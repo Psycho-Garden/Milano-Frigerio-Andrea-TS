@@ -278,6 +278,11 @@ namespace AF.TS.Weapons
             this.m_currentShootingMode.TriggerReleased();
         }
 
+        public void OnReloadInput() => TryReload();
+
+        public void OnNextMagazine() => TryChangeMagazine();
+        public void OnNextShootingMode() => TryChangeShootingMode();
+
         #endregion
 
         #region Logic Methods: -------------------------------------------------------------------------
