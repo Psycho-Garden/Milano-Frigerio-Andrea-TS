@@ -2,10 +2,9 @@
 using UnityEngine;
 using UnityEngine.Events;
 using Sirenix.OdinInspector;
+using Sirenix.OdinInspector.Editor;
 using AF.TS.Utils;
 using AF.TS.Weapons;
-using Sirenix.OdinInspector.Editor;
-using Sirenix.Utilities.Editor;
 
 namespace AF.TS.Items
 {

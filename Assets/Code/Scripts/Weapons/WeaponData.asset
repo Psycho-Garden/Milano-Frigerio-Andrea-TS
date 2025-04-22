@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: WeaponData
   m_EditorClassIdentifier: 
   m_name: Glock
-  m_icon: {fileID: 0}
+  m_icon: {fileID: -1557532715, guid: 92a4fe653152e9244b4849b9dba1c92b, type: 3}
   m_type: 0
   m_shootingMode:
   - rid: 5750133948359377061
@@ -118,6 +118,8 @@ MonoBehaviour:
   m_reloadTime: 0.25
   m_muzzleFlashPrefab: {fileID: 100004, guid: 302577c4c425ce14781bc5dd214f5576, type: 3}
   m_casingPrefab: {fileID: 5123463237699109487, guid: f96f078ae7922254da051b55fd9f89f0, type: 3}
+  m_shakeCamera: {fileID: 11400000, guid: e9ce97b7a206dc64d90931ea044e0c72, type: 2}
+  m_shakeDuration: 0
   m_shootSound: {fileID: 8300000, guid: e9c56fc6d4a125942baf78f3e428b1f0, type: 3}
   m_emptySound: {fileID: 8300000, guid: 2bf6d160e69cd30419496ae9ad86c5ec, type: 3}
   m_reloadSound: {fileID: 8300000, guid: ef2ff7b3a4cc9ca4393a0f5e437ec3c7, type: 3}

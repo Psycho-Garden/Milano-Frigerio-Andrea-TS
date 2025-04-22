@@ -50,6 +50,10 @@ namespace AD.TS.UI.HUD
         {
             m_targetCharacter.Stats.OnStaminaChanged += UpdateStamina;
             m_targetCharacter.Stats.OnHealthChanged += UpdateHealth;
+
+            m_targetCharacter.Inventory.OnWeaponChanged += UpdateGun;
+            m_targetCharacter.Inventory.OnMagazineChanged += UpdateMagazine;
+            m_targetCharacter.Inventory.OnAmmoChanged += UpdateAmmo;
         }
 
         private void OnDisable()
@@ -68,6 +72,19 @@ namespace AD.TS.UI.HUD
         private void UpdateHealth(float value) => UpdateBar(this.m_healthBar, value);
 
         private void UpdateStamina(float value) => UpdateBar(this.m_staminaBar, value);
+
+        private void UpdateMagazine(int value, int capacity)
+        {
+            UpdateAmmoMagazineCapacity(capacity);
+            UpdateAmmo(value);
+        }
+
+        private void UpdateGun(int value, int capacity, Sprite sprite)
+        {
+            UpdateAmmoMagazineCapacity(capacity);
+            UpdateAmmo(value);
+            UpdateGunIcon(sprite);
+        }
 
         private void UpdateAmmo(int value) => this.m_currentAmmo.text = value.ToString();
 

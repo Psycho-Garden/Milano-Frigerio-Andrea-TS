@@ -1,8 +1,9 @@
-using System;
+﻿using System;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using DG.Tweening;
 using AF.TS.Audio;
+using Unity.Cinemachine;
 
 namespace AF.TS.Weapons
 {
@@ -188,6 +189,8 @@ namespace AF.TS.Weapons
         private INewShootingMode m_currentShootingMode = null;
         private int m_currentMagazineIndex = 0;
 
+        private CinemachineBasicMultiChannelPerlin m_perlinNoise;
+
         #endregion
 
         #region Events: --------------------------------------------------------------------------------
@@ -208,7 +211,7 @@ namespace AF.TS.Weapons
                 ammoMagazine.Init();
             }
 
-            this.m_currentShootingMode = this.m_weaponData.ShootingModes[0];
+            this.m_currentShootingMode = this.m_weaponData.ShootingMode(0);
             this.m_currentShootingMode.Init(this);
         }
 
@@ -242,7 +245,7 @@ namespace AF.TS.Weapons
 
             if (!this.m_weaponData.HasCooldown && this.m_currentCooldown != 0f)
             {
-                if(this.m_currentState == GunState.Cooldown)
+                if (this.m_currentState == GunState.Cooldown)
                 {
                     this.m_currentState = GunState.Idle;
                 }
@@ -298,6 +301,8 @@ namespace AF.TS.Weapons
                 return;
             }
 
+            Shake(this.m_weaponData.ShakeDuration);
+
             if (this.m_ammoMagazines[this.m_currentMagazineIndex].Empty() && this.m_asSlideLock)
             {
                 foreach (Slide slide in this.m_slides)
@@ -330,7 +335,7 @@ namespace AF.TS.Weapons
 
             if (this.m_ammoMagazines[this.m_currentMagazineIndex].BulletPrefab == null)
             {
-                Debug.LogError($"{this.m_weaponData.name} | {this.name} has no bullet prefab");
+                Debug.LogError($"{this.m_weaponData.name} | {this.name}  has no bullet prefab");
                 return;
             }
 
@@ -340,7 +345,7 @@ namespace AF.TS.Weapons
                 return;
             }
 
-            Debug.Log($"{this.m_weaponData.name} | {this.name} is shooting");
+            Debug.Log($"{this.m_weaponData.name} | {this.name} → InstanceID: {GetInstanceID()}  is shooting");
 
             if (!this.m_ammoMagazines[this.m_currentMagazineIndex].HasSpace(this.m_weaponData.BulletPerShot))
             {
@@ -451,7 +456,7 @@ namespace AF.TS.Weapons
 
             this.m_currentShootingModeIndex = (this.m_currentShootingModeIndex + 1) % this.m_weaponData.ShootingModes.Length;
 
-            this.m_currentShootingMode = this.m_weaponData.ShootingModes[this.m_currentShootingModeIndex];
+            this.m_currentShootingMode = this.m_weaponData.ShootingMode(this.m_currentShootingModeIndex);
             this.m_currentShootingMode.Init(this);
         }
 
@@ -486,6 +491,30 @@ namespace AF.TS.Weapons
 
         public bool EditMuzzle => m_editMuzzle;
         public bool EditExtractor => m_editExtractor;
+
+        public void CameraPerlinNoise(CinemachineBasicMultiChannelPerlin perlinNoise) => m_perlinNoise = perlinNoise;
+        public int CurrentMagazineCapacity => this.m_ammoMagazines[this.m_currentMagazineIndex].MagazineCapacity;
+        public Sprite Icon => this.m_weaponData.Icon;
+
+        #endregion
+
+        #region Private Methods: -----------------------------------------------------------------------
+
+        private void Shake(float seconds = 0.5f)
+        {
+            if (this.m_perlinNoise == null || this.m_weaponData.ShakeCamera == null)
+            {
+                return;
+            }
+
+            NoiseSettings noiseSettings = this.m_perlinNoise.NoiseProfile;
+            this.m_perlinNoise.NoiseProfile = this.m_weaponData.ShakeCamera;
+
+            DOVirtual.DelayedCall(
+                seconds,
+                () => this.m_perlinNoise.NoiseProfile = noiseSettings,
+                false);
+        }
 
         #endregion
 

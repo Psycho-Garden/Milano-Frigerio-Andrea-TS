@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using Sirenix.OdinInspector;
+using System;
+using Unity.Cinemachine;
 
 namespace AF.TS.Weapons
 {
@@ -99,6 +101,16 @@ namespace AF.TS.Weapons
         [SerializeField, AssetsOnly, RequiredIn(PrefabKind.All)]
         private GameObject m_casingPrefab;
 
+        [FoldoutGroup("VFX")]
+        [Tooltip("The camera shake when the weapon fires.")]
+        [SerializeField]
+        private NoiseSettings m_shakeCamera;
+
+        [FoldoutGroup("VFX")]
+        [Tooltip("The duration of shake effects"), Unit(Units.Second)]
+        [SerializeField, MinValue(0f)]
+        private float m_shakeDuration = 0f;
+
         #endregion
 
         #region SFX
@@ -129,6 +141,11 @@ namespace AF.TS.Weapons
         public Sprite Icon => m_icon;
         public WeaponType Type => m_type;
         public INewShootingMode[] ShootingModes => m_shootingMode;
+        public INewShootingMode ShootingMode(int index)
+        {
+            Type modeType = m_shootingMode[index].GetType();
+            return (INewShootingMode)Activator.CreateInstance(modeType);
+        }
 
         // Shooting Settings
         public int BulletPerShot => m_bulletPerShot;
@@ -146,6 +163,8 @@ namespace AF.TS.Weapons
         // VFX
         public GameObject MuzzleFlashPrefab => m_muzzleFlashPrefab;
         public GameObject CasingPrefab => m_casingPrefab;
+        public NoiseSettings ShakeCamera => m_shakeCamera;
+        public float ShakeDuration => m_shakeDuration;
 
         // SFX
         public AudioClip ShootSound => m_shootSound;

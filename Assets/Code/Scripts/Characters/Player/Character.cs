@@ -610,8 +610,8 @@ namespace AF.TS.Characters
 
         [BoxGroup("Inventory")]
         [Tooltip("The weapon holders or references to weapon instances")]
-        [SerializeField, Required, ChildGameObjectsOnly]
-        private NewGunController[] m_weapons = new NewGunController[3];
+        [SerializeField, Required, ListDrawerSettings(HideAddButton = true, HideRemoveButton = true), RequiredListLength(3)]
+        private WeaponDataInventory[] m_weapons = new WeaponDataInventory[3];
 
         [BoxGroup("Camera")]
         [Tooltip("Aimed FOV")]
@@ -624,16 +624,6 @@ namespace AF.TS.Characters
         private float m_aimPerlinAmplitude = 0.5f;
 
         [BoxGroup("Weapon Aiming")]
-        [Tooltip("Idle position offset of the weapon")]
-        [SerializeField]
-        private Vector3 m_idleOffset;
-
-        [BoxGroup("Weapon Aiming")]
-        [Tooltip("Offset when aiming (weapon moves to center)")]
-        [SerializeField]
-        private Vector3 m_aimOffset;
-
-        [BoxGroup("Weapon Aiming")]
         [Tooltip("Speed of the transition when aiming")]
         [SerializeField]
         private float m_aimSmoothSpeed = 10f;
@@ -643,19 +633,28 @@ namespace AF.TS.Characters
         [SerializeField]
         private bool m_allowAimWhileRunningOrJumping = false;
 
+        [ShowInInspector, ReadOnly]
+        private string CurrentWeapon => m_weapons != null && m_weapons.Length > 0 ? m_weapons[m_currentWeaponIndex].GunController.name : "None";
+
         #endregion
 
         #region Private Members --------------------------------------------------------------------
 
         private int m_currentWeaponIndex = 0;
-        private NewGunController m_activeWeapon;
-        private Vector3 m_defaultWeaponPosition;
         private float m_defaultFOV;
         private float m_defaultAmplitudeGain;
         private CinemachineCamera m_camera;
         private CinemachineBasicMultiChannelPerlin m_perlinNoise;
         private CharacterMovement m_movement;
 
+        #endregion
+
+        #region Events -----------------------------------------------------------------------------
+
+        public event Action<int, int, Sprite> OnWeaponChanged;
+        public event Action<int, int> OnMagazineChanged;
+        public event Action<int> OnAmmoChanged;
+        
         #endregion
 
         #region Initialization ---------------------------------------------------------------------
@@ -666,16 +665,6 @@ namespace AF.TS.Characters
 
             this.m_movement = Character.Movement;
 
-            if (this.m_weapons.Length > 0 && this.m_weapons[0] != null)
-            {
-                foreach (NewGunController weapon in this.m_weapons)
-                {
-                    weapon.gameObject.SetActive(false);
-                }
-
-                EquipWeapon(0);
-            }
-
             if (Character.Camera.TryGetComponent<CinemachineBrain>(out CinemachineBrain cameraBrain))
             {
                 this.m_camera = cameraBrain.ActiveVirtualCamera as CinemachineCamera;
@@ -683,6 +672,17 @@ namespace AF.TS.Characters
 
                 this.m_perlinNoise = this.m_camera.GetComponent<CinemachineBasicMultiChannelPerlin>();
                 this.m_defaultAmplitudeGain = this.m_perlinNoise.AmplitudeGain;
+            }
+            
+            if (this.m_weapons.Length > 0)
+            {
+                foreach (WeaponDataInventory weapon in this.m_weapons)
+                {
+                    weapon.GunController.gameObject.SetActive(false);
+                    weapon.GunController.CameraPerlinNoise(this.m_perlinNoise);
+                }
+
+                EquipWeapon(0);
             }
         }
 
@@ -694,6 +694,7 @@ namespace AF.TS.Characters
         {
             HandleAiming();
             HandleInput();
+            HandleWeaponRotation();
         }
 
         #endregion
@@ -709,43 +710,63 @@ namespace AF.TS.Characters
 
             if (Character.Input.SwitchShootingModePressed)
             {
-                this.m_activeWeapon?.OnNextShootingMode();
+                this.m_weapons[m_currentWeaponIndex].GunController?.OnNextShootingMode();
             }
 
             if (Character.Input.SwitchAmmoMagazinePressed)
             {
-                this.m_activeWeapon?.OnNextMagazine();
+                this.m_weapons[m_currentWeaponIndex].GunController?.OnNextMagazine();
+
+                OnMagazineChanged?.Invoke(
+                    this.m_weapons[m_currentWeaponIndex].GunController.CurrentAmmo, 
+                    this.m_weapons[m_currentWeaponIndex].GunController.CurrentMagazineCapacity
+                    );
             }
 
             if (Character.Input.ShootPressed)
             {
-                this.m_activeWeapon?.OnFireInput();
+                this.m_weapons[m_currentWeaponIndex].GunController?.OnFireInput();
             }
 
             if (!Character.Input.ShootPressed)
             {
-                this.m_activeWeapon?.OnFireRelease();
+                this.m_weapons[m_currentWeaponIndex].GunController?.OnFireRelease();
             }
 
             if (Character.Input.ReloadPressed)
             {
-                this.m_activeWeapon?.OnReloadInput();
+                this.m_weapons[m_currentWeaponIndex].GunController?.OnReloadInput();
+            }
+
+            if (Character.Input.PrimaryGunPressed)
+            {
+                EquipWeapon(0);
+            }
+
+            if (Character.Input.SecondaryGunPressed)
+            {
+                EquipWeapon(1);
+            }
+
+            if (Character.Input.TertiaryGunPressed)
+            {
+                EquipWeapon(2);
             }
         }
 
         private void HandleAiming()
         {
-            if (this.m_activeWeapon == null) return;
-
             bool isAiming = Character.Input.IsAiming;
             bool canAim = m_allowAimWhileRunningOrJumping || (!m_movement.IsRunning && !m_movement.IsJumping);
 
-            Vector3 targetPosition = (isAiming && canAim) ? this.m_aimOffset : this.m_defaultWeaponPosition;
-            this.m_activeWeapon.transform.localPosition = Vector3.Lerp(
-                this.m_activeWeapon.transform.localPosition,
-                targetPosition,
-                Time.deltaTime * m_aimSmoothSpeed
-            );
+            Vector3 targetPosition = isAiming && canAim ? m_weapons[m_currentWeaponIndex].AimOffset.Position : m_weapons[m_currentWeaponIndex].IdleOffset.Position;
+            Vector3 currentPosition = m_weapons[m_currentWeaponIndex].GunController.transform.localPosition;
+            m_weapons[m_currentWeaponIndex].GunController.transform.localPosition = Vector3.MoveTowards(currentPosition, targetPosition, m_aimSmoothSpeed * Time.deltaTime);
+
+            Vector3 targetRotation = isAiming && canAim ? m_weapons[m_currentWeaponIndex].AimOffset.Rotation : m_weapons[m_currentWeaponIndex].IdleOffset.Rotation;
+            Quaternion targetRotationQuaternion = Quaternion.Euler(targetRotation);
+            Quaternion currentRotation = m_weapons[m_currentWeaponIndex].GunController.transform.localRotation;
+            m_weapons[m_currentWeaponIndex].GunController.transform.localRotation = Quaternion.RotateTowards(currentRotation, targetRotationQuaternion, m_aimSmoothSpeed * Time.deltaTime);
 
             if (this.m_camera != null)
             {
@@ -773,32 +794,64 @@ namespace AF.TS.Characters
         {
             if (index < 0 || index >= this.m_weapons.Length || this.m_weapons[index] == null) return;
 
-            if (this.m_activeWeapon != null)
-            {
-                this.m_activeWeapon.gameObject.SetActive(false);
-            }
+            this.m_weapons[this.m_currentWeaponIndex].GunController.gameObject.SetActive(false);
+
+            this.m_weapons[m_currentWeaponIndex].GunController.OnShot -= OnAmmo;
+            this.m_weapons[m_currentWeaponIndex].GunController.OnReloadComplete -= OnAmmo;
 
             this.m_currentWeaponIndex = index;
-            this.m_activeWeapon = this.m_weapons[this.m_currentWeaponIndex];
+            this.m_weapons[this.m_currentWeaponIndex].GunController.gameObject.SetActive(true);
+            this.m_weapons[this.m_currentWeaponIndex].GunController.transform.SetLocalPositionAndRotation(
+                this.m_weapons[this.m_currentWeaponIndex].IdleOffset.Position,
+                Quaternion.Euler(this.m_weapons[this.m_currentWeaponIndex].IdleOffset.Rotation)
+                );
 
-            this.m_activeWeapon.gameObject.SetActive(true);
-            this.m_defaultWeaponPosition = this.m_activeWeapon.transform.localPosition;
+            OnWeaponChanged?.Invoke(
+                this.m_weapons[this.m_currentWeaponIndex].GunController.CurrentAmmo, 
+                this.m_weapons[this.m_currentWeaponIndex].GunController.CurrentMagazineCapacity, 
+                this.m_weapons[this.m_currentWeaponIndex].GunController.Icon
+                );
+
+            this.m_weapons[m_currentWeaponIndex].GunController.OnShot += OnAmmo;
+            this.m_weapons[m_currentWeaponIndex].GunController.OnReloadComplete += OnAmmo;
         }
 
-        #endregion
-
-        #region Gizmos -----------------------------------------------------------------------------
-
-        public override void OnDrawGizmosSelected()
+        private void OnAmmo()
         {
-            if (this.m_activeWeapon != null)
-            {
-                Gizmos.color = Color.green;
-                Gizmos.DrawWireSphere(this.m_activeWeapon.transform.position + this.m_aimOffset, 0.05f);
-            }
+            OnAmmoChanged?.Invoke(this.m_weapons[this.m_currentWeaponIndex].GunController.CurrentAmmo);
+        }
+
+        private void HandleWeaponRotation()
+        {
+            Vector3 oldRotation = this.m_weapons[this.m_currentWeaponIndex].GunController.transform.rotation.eulerAngles;
+            Quaternion targetRotation = Quaternion.Euler(Character.Camera.transform.eulerAngles.x, oldRotation.y, oldRotation.z);
+            this.m_weapons[this.m_currentWeaponIndex].GunController.transform.rotation = targetRotation;
         }
 
         #endregion
+
+    }
+
+    [Serializable]
+    public class WeaponDataInventory
+    {
+        [Tooltip("The gun controller")]
+        [SerializeField, Required, ChildGameObjectsOnly]
+        private NewGunController m_gunController;
+
+        [FoldoutGroup("Idle Offset")]
+        [Tooltip("The position of the weapon when not aiming")]
+        [SerializeField, InlineProperty, HideLabel]
+        private Point m_idleOffset;
+
+        [FoldoutGroup("Aim Offset")]
+        [Tooltip("The position of the weapon when aiming")]
+        [SerializeField, InlineProperty, HideLabel]
+        private Point m_aimOffset;
+
+        public NewGunController GunController => m_gunController;
+        public Point IdleOffset => m_idleOffset;
+        public Point AimOffset => m_aimOffset;
     }
 
     public interface IModule
