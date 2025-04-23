@@ -3,7 +3,6 @@ using Sirenix.OdinInspector;
 
 namespace AF.TS.Utils
 {
-    [RequireComponent(typeof(Collider))]
     [DisallowMultipleComponent]
     public class ColliderVisualizer : MonoBehaviour
     {
@@ -11,20 +10,20 @@ namespace AF.TS.Utils
 
         #region Fields ----------------------------------------------------------------------------
 
-        [FoldoutGroup("Debug")]
+        [FoldoutGroup("Debug"), PropertyOrder(999)]
         [Tooltip("Choose when to show collider gizmos in the editor")]
         [SerializeField]
         private ColliderGizmoDisplayMode m_displayMode = ColliderGizmoDisplayMode.OnlyWhenSelected;
 
-        [FoldoutGroup("Debug")]
+        [FoldoutGroup("Debug"), PropertyOrder(999)]
         [Tooltip("Only show enabled colliders")]
         [SerializeField, ToggleLeft] private bool m_showColliders = true;
 
-        [FoldoutGroup("Debug")]
+        [FoldoutGroup("Debug"), PropertyOrder(999)]
         [Tooltip("Only show enabled colliders")]
         [SerializeField, ToggleLeft] private bool m_showCollidesrOnlyEnabled = true;
 
-        [FoldoutGroup("Debug")]
+        [FoldoutGroup("Debug"), PropertyOrder(999)]
         [Tooltip("The color of the gizmos")]
         [SerializeField, ColorPalette, HideLabel] private Color m_gizmoColor = Color.green;
 
@@ -32,7 +31,7 @@ namespace AF.TS.Utils
 
         #region Unity Methods ---------------------------------------------------------------------
 
-        private void OnDrawGizmos()
+        protected virtual void OnDrawGizmos()
         {
             if (m_displayMode == ColliderGizmoDisplayMode.Always && m_showColliders)
             {
@@ -40,7 +39,7 @@ namespace AF.TS.Utils
             }
         }
 
-        private void OnDrawGizmosSelected()
+        protected virtual void OnDrawGizmosSelected()
         {
             if (m_displayMode == ColliderGizmoDisplayMode.OnlyWhenSelected && m_showColliders)
             {

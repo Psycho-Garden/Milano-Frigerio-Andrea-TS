@@ -1,3 +1,5 @@
+using AF.TS.Characters;
+
 namespace AF.TS.Items
 { 
     public interface IInteractables
@@ -7,6 +9,6 @@ namespace AF.TS.Items
 
     public interface IIAmTarget
     {
-        public void TakeDamage(float damage);
+        public void TakeDamage(DamageData data);
     }
 }

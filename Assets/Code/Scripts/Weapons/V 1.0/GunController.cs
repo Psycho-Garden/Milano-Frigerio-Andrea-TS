@@ -8,6 +8,7 @@ namespace AF.TS.Weapons
     [HideMonoScript]
     [DisallowMultipleComponent]
     [RequireComponent(typeof(AudioSource))]
+    [Obsolete("Use NewGunController instead", true)]
     public class GunController : MonoBehaviour
     {
         #region Exposed Members: -----------------------------------------------------------------------

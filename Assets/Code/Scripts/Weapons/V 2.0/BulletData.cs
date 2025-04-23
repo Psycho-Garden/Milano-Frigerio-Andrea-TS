@@ -2,11 +2,12 @@
 using Unity.Cinemachine;
 using static UnityEngine.ParticleSystem;
 using Sirenix.OdinInspector;
+using AF.TS.Characters;
+
 
 #if UNITY_EDITOR
 using System;
 #endif
-
 
 namespace AF.TS.Weapons
 {
@@ -57,10 +58,20 @@ namespace AF.TS.Weapons
         [SerializeField, MultiType(typeof(float), typeof(Vector2), typeof(AnimationCurve), typeof(MinMaxCurve))]
         private MultiTypeValue m_spread;
 
-        [FoldoutGroup("General Settings")]
+        [FoldoutGroup("General Settings/Damage")]
         [Tooltip("Bullet damage amount.")]
         [SerializeField, MinValue(0f)]
         private float m_damage = 1f;
+
+        [FoldoutGroup("General Settings/Damage")]
+        [Tooltip("Bullet damage type.")]
+        [SerializeField]
+        private DamageType m_damageType = DamageType.Physical;
+
+        [FoldoutGroup("General Settings/Damage")]
+        [Tooltip("Bullet damage status effect.")]
+        [SerializeField]
+        private StatusEffectType m_statusEffect = StatusEffectType.None;
 
         [GUIColor("red")] //TODO: Need to be implmented
         [FoldoutGroup("General Settings")]
@@ -221,6 +232,10 @@ namespace AF.TS.Weapons
         public float Spread => m_spread.Evaluate();
 
         public float Damage => m_damage;
+
+        public DamageType DamageType => m_damageType;
+
+        public StatusEffectType StatusEffect => m_statusEffect;
 
         public int Penetration => m_penetration;
 

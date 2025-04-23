@@ -5,17 +5,14 @@ using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using AF.TS.Utils;
 using AF.TS.Weapons;
+using Unity.VisualScripting;
+using static AF.TS.Utils.TriggerCustomHandler;
 
 namespace AF.TS.Items
 {
     [HideMonoScript]
-    public class Interactable : MonoBehaviour, IInteractable
+    public class Interactable : ColliderVisualizer, IInteractable
     {
-        const bool HARD_BLOCK_SELF_REFERENCE = true;
-
-        [Serializable]
-        public class TriggerEnterEvent : UnityEvent<Transform> { }
-
         [HorizontalGroup("Events/count", width: 16f), PropertyOrder(1)]
         [Tooltip("")]
         [SerializeField, HideLabel]
@@ -29,7 +26,7 @@ namespace AF.TS.Items
         [FoldoutGroup("Events", Expanded = true), PropertyOrder(1)]
         [Tooltip("Event triggered when the interactable is interacted")]
         [SerializeField]
-        protected TriggerEnterEvent m_onInteracted = new();
+        protected TriggerEvent m_onInteracted = new();
 
         [FoldoutGroup("Events"), PropertyOrder(1)]
         [Tooltip("Color of the connections")]
@@ -55,51 +52,17 @@ namespace AF.TS.Items
         private void OnValidate()
         {
 #if UNITY_EDITOR
-            for (int i = 0; i < m_onInteracted.GetPersistentEventCount(); i++)
-            {
-                var target = m_onInteracted.GetPersistentTarget(i);
-                if (target == this)
-                {
-                    Debug.LogWarning($"[<color=green>Interactable</color>] '{name}' has a <color=red>self-reference in m_onInteracted — this may cause recursion!</color>", this);
-                }
-            }
-
-#endif
-#if UNITY_EDITOR && HARD_BLOCK_SELF_REFERENCE
-            for (int i = m_onInteracted.GetPersistentEventCount() - 1; i >= 0; i--)
-            {
-                if (m_onInteracted.GetPersistentTarget(i) == this)
-                {
-                    Debug.LogWarning("<color=yellow>Removed self-referencing listener to prevent recursion.</color>\n[This is disabled in the code]");
-                    UnityEditor.Events.UnityEventTools.RemovePersistentListener(m_onInteracted, i);
-                    UnityEditor.EditorUtility.SetDirty(this);
-                }
-            }
+            this.m_onInteracted.TriggerEventCheckAuto(this);
 #endif
         }
 
 
         public virtual void OnDrawGizmosSelected()
         {
-            Gizmos.color = this.m_colorConnection;
+            base.OnDrawGizmosSelected();
 
 #if UNITY_EDITOR
-            if (this.m_onInteracted == null) return;
-
-            int listenerCount = this.m_onInteracted.GetPersistentEventCount();
-
-            for (int i = 0; i < listenerCount; i++)
-            {
-                UnityEngine.Object targetObj = this.m_onInteracted.GetPersistentTarget(i);
-                if (targetObj is Transform targetTransform)
-                {
-                    Gizmos.DrawLine(this.transform.position, targetTransform.position);
-                }
-                else if (targetObj is Component component)
-                {
-                    Gizmos.DrawLine(this.transform.position, component.transform.position);
-                }
-            }
+            this.m_onInteracted.DrawConnectionGizmo(this.transform, this.m_colorConnection);
 #endif
         }
     }

@@ -4,6 +4,7 @@ using TMPro;
 using Sirenix.OdinInspector;
 using AF.TS.Characters;
 using AF.TS.Utils;
+using DG.Tweening;
 
 namespace AD.TS.UI.HUD
 {
@@ -19,6 +20,11 @@ namespace AD.TS.UI.HUD
         [Tooltip("Stamina bar")]
         [SerializeField, Required, SceneObjectsOnly]
         private Slider m_staminaBar;
+
+        [FoldoutGroup("Character Stats")]
+        [Tooltip("Damage screen")]
+        [SerializeField, Required, SceneObjectsOnly]
+        private Image m_damageScreen;
 
         [FoldoutGroup("Gun Stats")]
         [Tooltip("Gun Icon")]
@@ -51,6 +57,8 @@ namespace AD.TS.UI.HUD
             m_targetCharacter.Stats.OnStaminaChanged += UpdateStamina;
             m_targetCharacter.Stats.OnHealthChanged += UpdateHealth;
 
+            m_targetCharacter.OnTakeDamage += TakeDamage;
+
             m_targetCharacter.Inventory.OnWeaponChanged += UpdateGun;
             m_targetCharacter.Inventory.OnMagazineChanged += UpdateMagazine;
             m_targetCharacter.Inventory.OnAmmoChanged += UpdateAmmo;
@@ -60,6 +68,12 @@ namespace AD.TS.UI.HUD
         {
             m_targetCharacter.Stats.OnStaminaChanged -= UpdateStamina;
             m_targetCharacter.Stats.OnHealthChanged -= UpdateHealth;
+
+            m_targetCharacter.OnTakeDamage -= TakeDamage;
+
+            m_targetCharacter.Inventory.OnWeaponChanged -= UpdateGun;
+            m_targetCharacter.Inventory.OnMagazineChanged -= UpdateMagazine;
+            m_targetCharacter.Inventory.OnAmmoChanged -= UpdateAmmo;
         }
 
         #region Private Functions --------------------------------------------------------
@@ -84,6 +98,19 @@ namespace AD.TS.UI.HUD
             UpdateAmmoMagazineCapacity(capacity);
             UpdateAmmo(value);
             UpdateGunIcon(sprite);
+        }
+
+        private void TakeDamage()
+        {
+            m_damageScreen.DOKill();
+
+            m_damageScreen
+                .DOFade(1f, 0.1f)
+                .SetEase(Ease.Linear)
+                .OnComplete(() =>
+                {
+                    m_damageScreen.DOFade(0f, 0.1f).SetEase(Ease.Linear);
+                });
         }
 
         private void UpdateAmmo(int value) => this.m_currentAmmo.text = value.ToString();

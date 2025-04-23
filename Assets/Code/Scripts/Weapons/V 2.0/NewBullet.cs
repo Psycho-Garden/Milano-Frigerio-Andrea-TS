@@ -4,6 +4,7 @@ using System;
 using Sirenix.OdinInspector;
 using AF.TS.Utils;
 using AF.TS.Items;
+using AF.TS.Characters;
 
 namespace AF.TS.Weapons
 {
@@ -199,6 +200,11 @@ namespace AF.TS.Weapons
             else if (other.TryGetComponent(out IInteractable interactable2))
             {
                 interactable2.Interact();
+            }
+
+            if(other.TryGetComponent(out IIAmTarget target))
+            {
+                target.TakeDamage(DamageData.Create(this.m_bulletData.Damage, this.gameObject, this.m_bulletData.DamageType));
             }
 
             if (this.m_bulletData.ImpactEffect != null)

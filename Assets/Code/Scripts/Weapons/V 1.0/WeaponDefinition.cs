@@ -1,11 +1,13 @@
 using UnityEngine;
 using Unity.Cinemachine;
 using Sirenix.OdinInspector;
+using System;
 
 namespace AF.TS.Weapons
 {
     [HideMonoScript]
     [CreateAssetMenu(menuName = "AF/Weapons/Weapon Definition")]
+    [Obsolete("Use WeaponData instead", true)]
     public class WeaponDefinition : ScriptableObject
     {
         #region Fields ------------------------------------------------------------------

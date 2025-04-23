@@ -30,7 +30,7 @@ namespace AF.TS.Weapons
 
         [BoxGroup("Base Definition")]
         [Tooltip("Available shooting modes for this weapon (e.g., semi-auto, burst, full-auto).")]
-        [SerializeReference, PolymorphicDrawerSettings(ShowBaseType = false)]
+        [SerializeReference]
         private INewShootingMode[] m_shootingMode = new ShootModeBase[0];
 
         #endregion

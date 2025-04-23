@@ -67,6 +67,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59e119a89fbb5424d8c28e37c7347690, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_displayMode: 1
+  m_showColliders: 1
+  m_showCollidesrOnlyEnabled: 1
+  m_gizmoColor: {r: 0, g: 1, b: 0, a: 1}
   m_isInteractableOnce: 0
   m_maxPerformances: 1
   m_onInteracted:
@@ -76,7 +80,7 @@ MonoBehaviour:
   m_clip: {fileID: 8300000, guid: 4172dd28433b199478e507ff8a2e6d7c, type: 3}
   m_spatial3D: 1
   m_button: {fileID: 8056239438887024391}
-  m_escursion: 3
+  m_escursion: 0.03
   m_duration: 0.5
   m_isDisabled: 0
   m_isToggle: 0

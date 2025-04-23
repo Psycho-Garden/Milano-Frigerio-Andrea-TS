@@ -1,47 +1,67 @@
 ﻿using System;
 using UnityEngine;
-using Sirenix.OdinInspector;
-using AF.TS.Utils;
-using UnityEngine.UIElements;
-using AF.TS.Weapons;
 using Unity.Cinemachine;
 using Unity.VisualScripting;
-using AF.TS.Characters;
+using UnityEngine.UIElements;
+using Sirenix.OdinInspector;
+using AF.TS.Utils;
+using AF.TS.Weapons;
 
 namespace AF.TS.Characters
 {
     [DefaultExecutionOrder(-95)]
     [HideMonoScript]
     [DisallowMultipleComponent]
-    public class Character : MonoBehaviour
+    public class Character : MonoBehaviour, IHaveHealth
     {
         #region Exposed Members --------------------------------------------------------------------
 
-        [BoxGroup("Settings")]
+        [TabGroup("Modules", Icon = SdfIconType.Collection, TextColor = "blue")]
         [Tooltip("The movement module of the character")]
-        [SerializeReference, Required, InlineEditor(InlineEditorObjectFieldModes.Boxed), HideLabel]
+        [HideLabel]
+        [SerializeReference, Required, OnValueChanged("ChangeMovement")]
         protected IModuleMovement m_movement;
 
-        [BoxGroup("Settings")]
-        [Tooltip("")]
-        [SerializeReference, Required, InlineEditor(InlineEditorObjectFieldModes.Boxed), HideLabel]
+        [TabGroup("Modules")]
+        [Tooltip("The stats module of the character")]
+        [HideLabel]
+        [SerializeReference, Required, OnValueChanged("ChangeStats")]
         protected IModuleStats m_stats;
 
-        [BoxGroup("Settings")]
-        [Tooltip("")]
-        [SerializeReference, Required, InlineEditor(InlineEditorObjectFieldModes.Boxed), HideLabel]
+        [TabGroup("Modules")]
+        [Tooltip("the inventory module of the character")]
+        [HideLabel]
+        [SerializeReference, Required, OnValueChanged("ChangeInventory")]
         protected IModuleInventory m_inventory;
 
-        [FoldoutGroup("References")]
+        [TabGroup("References", Icon = SdfIconType.Folder, TextColor = "green")]
         [Tooltip("The main camera of the character")]
         [SerializeField, Required, SceneObjectsOnly]
         protected Camera m_mainCamera;
+
+#if UNITY_EDITOR
+
+        [TabGroup("References")]
+        [SerializeField, InlineProperty, HideLabel] 
+        private HealthSystemEditorHelper m_editorHelper = new();
+
+        private void OnValidate()
+        {
+            m_editorHelper.OnValidate(this.gameObject);
+        }
+
+        private void OnTransformChildrenChanged()
+        {
+            m_editorHelper.OnTransformChildrenChanged(this.gameObject);
+        }
+
+#endif
 
         #endregion
 
         #region Private Members --------------------------------------------------------------------
 
-        [FoldoutGroup("Debug")]
+        [TabGroup("Debug", Icon = SdfIconType.Bug, TextColor = "red")]
         [Tooltip("The input module of the character")]
         [ShowInInspector, ReadOnly]
         protected CharacterInput m_input;
@@ -50,7 +70,8 @@ namespace AF.TS.Characters
 
         #region Events -----------------------------------------------------------------------------
 
-        public static event Action OnCharacterDied;
+        public event Action OnTakeDamage;
+        public event Action OnCharacterDied;
 
         #endregion
 
@@ -61,6 +82,11 @@ namespace AF.TS.Characters
         protected void Start()
         {
             this.m_input = ServiceLocator.Get<CharacterInput>();
+
+            foreach (var hurtbox in GetComponentsInChildren<Hurtbox>())
+            {
+                hurtbox.SetOwner(this);
+            }
 
             this.m_movement?.Init(this);
             this.m_inventory?.Init(this);
@@ -119,8 +145,49 @@ namespace AF.TS.Characters
         public Camera Camera => this.m_mainCamera;
 
         public CharacterMovement Movement => this.m_movement as CharacterMovement;
-        public CharacterInventory Inventory => this.m_inventory as CharacterInventory;
         public CharacterStats Stats => this.m_stats as CharacterStats;
+        public CharacterInventory Inventory => this.m_inventory as CharacterInventory;
+
+        public void ChangeMovement(IModuleMovement movement)
+        {
+            this.m_movement?.OnDispose();
+            this.m_movement = movement;
+            this.m_movement?.Init(this);
+            this.m_movement?.OnStart();
+        }
+
+        public void ChangeInventory(IModuleInventory inventory)
+        {
+            this.m_inventory?.OnDispose();
+            this.m_inventory = inventory;
+            this.m_inventory?.Init(this);
+            this.m_inventory?.OnStart();
+        }
+
+        public void ChangeStats(IModuleStats stats)
+        {
+            this.m_stats?.OnDispose();
+            this.m_stats = stats;
+            this.m_stats?.Init(this);
+            this.m_stats?.OnStart();
+        }
+
+        public void TakeDamage(float damage)
+        {
+            if (damage > 0f)
+            {
+                OnTakeDamage?.Invoke();
+            }
+
+            Stats.TakeDamage(damage);
+
+            if (Stats.Health <= 0f)
+            {
+                OnCharacterDied?.Invoke();
+            }
+        }
+
+        public void ApplyStatusEffect(StatusEffectType effect) { }
 
         #endregion
 
@@ -149,6 +216,7 @@ namespace AF.TS.Characters
         }
 
         public virtual void OnStart() { }
+        public virtual void OnDispose() { }
         public virtual void OnUpdate() { }
         public virtual void OnLateUpdate() { }
         public virtual void OnFixedUpdate() { }
@@ -588,13 +656,19 @@ namespace AF.TS.Characters
         public void RestoreHealth(float amount)
         {
             this.m_currentHealth = Mathf.Min(this.m_currentHealth + amount, this.m_maxHealth);
+
+            OnHealthChanged?.Invoke(HealthNormalized);
         }
 
         public void TakeDamage(float amount)
         {
             this.m_currentHealth -= amount;
             this.m_currentHealth = Mathf.Max(this.m_currentHealth, 0f);
+
+            OnHealthChanged?.Invoke(HealthNormalized);
         }
+
+        public float Health => this.m_currentHealth;
 
         public bool HasEnoughStamina(float required) => this.m_currentStamina >= required;
         public float StaminaNormalized => this.m_currentStamina / this.m_maxStamina;
@@ -633,6 +707,8 @@ namespace AF.TS.Characters
         [SerializeField]
         private bool m_allowAimWhileRunningOrJumping = false;
 
+        [FoldoutGroup("Debug")]
+        [Tooltip("Current weapon")]
         [ShowInInspector, ReadOnly]
         private string CurrentWeapon => m_weapons != null && m_weapons.Length > 0 ? m_weapons[m_currentWeaponIndex].GunController.name : "None";
 
@@ -794,6 +870,12 @@ namespace AF.TS.Characters
         {
             if (index < 0 || index >= this.m_weapons.Length || this.m_weapons[index] == null) return;
 
+            if (m_weapons[index]?.GunController == null)
+            {
+                Debug.LogWarning($"[<color=red>Inventory</color>] Weapon at slot {index} is null or missing GunController.");
+                return;
+            }
+
             this.m_weapons[this.m_currentWeaponIndex].GunController.gameObject.SetActive(false);
 
             this.m_weapons[m_currentWeaponIndex].GunController.OnShot -= OnAmmo;
@@ -858,6 +940,7 @@ namespace AF.TS.Characters
     {
         public void Init(Character character);
         public void OnStart();
+        public void OnDispose();
         public void OnUpdate();
         public void OnLateUpdate();
         public void OnFixedUpdate();

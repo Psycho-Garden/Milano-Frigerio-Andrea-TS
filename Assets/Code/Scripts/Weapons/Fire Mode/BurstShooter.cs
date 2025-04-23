@@ -1,8 +1,10 @@
 using UnityEngine;
 using DG.Tweening;
+using System;
 
 namespace AF.TS.Weapons
 {
+    [Obsolete("Use the version for NewGunController", true)]
     public class BurstShooter : IShootingMode
     {
         private GunController m_controller;

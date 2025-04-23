@@ -2,6 +2,7 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 using AF.TS.Utils;
 using AF.TS.Items;
+using System;
 namespace AF.TS.Weapons
 {
     /// <summary>
@@ -10,6 +11,7 @@ namespace AF.TS.Weapons
     /// Returns to the object pool upon collision or exceeding range.
     /// </summary>
     [HideMonoScript]
+    [Obsolete("Use NewBullet instead", true)]
     public class Bullet : MonoBehaviour
     {
         #region Private Fields ------------------------------------------------------------------
@@ -68,7 +70,7 @@ namespace AF.TS.Weapons
         {
             if (other.TryGetComponent<IIAmTarget>(out var target))
             {
-                target.TakeDamage(m_damage);
+                //target.TakeDamage(m_damage);
             }
 
             OnDispose();

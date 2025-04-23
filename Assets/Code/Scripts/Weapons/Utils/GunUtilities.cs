@@ -81,6 +81,7 @@ namespace AF.TS.Weapons
             audioSource.PlayOneShot(clip);
         }
 
+        [System.Obsolete("Use Shoot2 instead", true)]
         public static Bullet Shoot(Transform transform, string prefabName, Vector3 position, Vector3 rotation)
         {
             GameObject bullet = ServiceLocator.Get<ObjectPooler>().Get(prefabName);

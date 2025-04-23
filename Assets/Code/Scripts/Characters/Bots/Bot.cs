@@ -119,7 +119,7 @@ namespace AF.TS.Characters
 
             foreach (var hurtbox in GetComponentsInChildren<Hurtbox>())
             {
-                hurtbox.owner = this;
+                hurtbox.SetOwner(this);
             }
         }
 
@@ -231,6 +231,8 @@ namespace AF.TS.Characters
                 this.gameObject.SetActive(false);
             }
         }
+
+        public void ApplyStatusEffect(StatusEffectType effect) { }
 
         #endregion
 
@@ -437,5 +439,6 @@ namespace AF.TS.Characters
     public interface IHaveHealth
     {
         void TakeDamage(float damage);
+        public void ApplyStatusEffect(StatusEffectType effect);
     }
 }
