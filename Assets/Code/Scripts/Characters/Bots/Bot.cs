@@ -15,64 +15,66 @@ namespace AF.TS.Characters
 {
     [HideMonoScript]
     [ExecuteAlways]
-    public class Bot : MonoBehaviour, IHaveHealth
+    public class Bot : MonoBehaviour
     {
         #region Serialized Fields ----------------------------------------------------------------------
 
         [BoxGroup("References")]
         [Tooltip("Root body transform for Y rotation.")]
-        [SerializeField] private Transform m_body;
+        [SerializeField, ChildGameObjectsOnly]
+        private Transform m_body;
 
         [BoxGroup("References")]
         [Tooltip("Gun handle used for aiming on X axis.")]
-        [SerializeField] private Transform m_gunHandle;
+        [SerializeField, ChildGameObjectsOnly]
+        private Transform m_gunHandle;
 
         [BoxGroup("References")]
         [Tooltip("Gun GameObject (must have GunController).")]
-        [SerializeField, OnValueChanged("SetGunPosition")] private GameObject m_gun;
+        [SerializeField, OnValueChanged("SetGunPosition"), ChildGameObjectsOnly]
+        private GameObject m_gun;
 
         [BoxGroup("Aim Settings")]
-        [Tooltip("Shooting range.")]
-        [Unit(Units.Meter)]
-        [SerializeField] private float m_range = 5f;
+        [Tooltip("Shooting range."), Unit(Units.Meter)]
+        [SerializeField]
+        private float m_range = 5f;
 
         [BoxGroup("Aim Settings")]
-        [SerializeField] private Vector3 m_gunAimOffset = Vector3.zero;
+        [Tooltip("")]
+        [SerializeField]
+        private Vector3 m_gunAimOffset = Vector3.zero;
 
         [BoxGroup("Aim Settings")]
-        [SerializeField] private Vector3 m_aimDirection = -Vector3.up;
+        [Tooltip("")]
+        [SerializeField]
+        private Vector3 m_aimDirection = -Vector3.up;
 
         [BoxGroup("Aim Settings")]
-        [Unit(Units.Degree)]
-        [SerializeField] private float m_aimAngle = 45f;
+        [Tooltip(""), Unit(Units.Degree)]
+        [SerializeField]
+        private float m_aimAngle = 45f;
 
         [BoxGroup("Aim Settings")]
-        [Unit(Units.Degree)]
-        [SerializeField] private float m_aimTolerance = 10f;
+        [Tooltip(""), Unit(Units.Degree)]
+        [SerializeField]
+        private float m_aimTolerance = 10f;
 
         [BoxGroup("Aim Settings")]
-        [Unit(Units.Second)]
-        [SerializeField] private float m_bodyRotationSpeed = 0.25f;
+        [Tooltip(""), Unit(Units.Second)]
+        [SerializeField]
+        private float m_bodyRotationSpeed = 0.25f;
 
         [BoxGroup("Aim Settings")]
-        [Unit(Units.Second)]
-        [SerializeField] private float m_gunRotationSpeed = 0.15f;
+        [Tooltip(""), Unit(Units.Second)]
+        [SerializeField]
+        private float m_gunRotationSpeed = 0.15f;
 
         [BoxGroup("Aim Settings")]
-        [Tooltip("Cooldown time before reset rotation after losing target.")]
-        [Unit(Units.Second)]
+        [Tooltip("Cooldown time before reset rotation after losing target."), Unit(Units.Second)]
         [SerializeField]
         private float m_resetAimDelay = 2f;
 
-        [BoxGroup("Health System")]
-        [Tooltip("Bot's health.")]
-        [SerializeField] private float m_health;
-
 #if UNITY_EDITOR
-
-        [BoxGroup("Health System")]
-        [SerializeField, InlineProperty, HideLabel] private HealthSystemEditorHelper m_editorHelper = new();
-
         private void SetGunPosition()
         {
             if (m_gun != null)
@@ -80,17 +82,6 @@ namespace AF.TS.Characters
                 m_gun.transform.SetPositionAndRotation(m_gunHandle.position, m_gunHandle.rotation);
             }
         }
-
-        private void OnValidate()
-        {
-            m_editorHelper.OnValidate(this.gameObject);
-        }
-
-        private void OnTransformChildrenChanged()
-        {
-            m_editorHelper.OnTransformChildrenChanged(this.gameObject);
-        }
-
 #endif
 
         #endregion
@@ -103,6 +94,8 @@ namespace AF.TS.Characters
         private bool m_hasTargetInRange = false;
         private bool m_isResetting = false;
 
+        private HealthSystem m_healthSystem;
+
         private Vector3 m_targetPosition = Vector3.zero;
 
         #endregion
@@ -114,13 +107,10 @@ namespace AF.TS.Characters
             m_gun.transform.parent = m_gunHandle;
             m_gun.transform.SetPositionAndRotation(m_gunHandle.position, m_gunHandle.rotation);
 
+            m_healthSystem = GetComponent<HealthSystem>();
+
             m_gunController = m_gun.GetComponent<NewGunController>();
             m_character = ServiceLocator.Get<Character>();
-
-            foreach (var hurtbox in GetComponentsInChildren<Hurtbox>())
-            {
-                hurtbox.SetOwner(this);
-            }
         }
 
         private void Update()
@@ -218,24 +208,6 @@ namespace AF.TS.Characters
 
         #endregion
 
-        #region Public Methods -------------------------------------------------------------------------
-
-        public void TakeDamage(float damage)
-        {
-            Debug.Log("Bot took " + damage + " damage.");
-
-            m_health -= damage;
-
-            if (m_health <= 0)
-            {
-                this.gameObject.SetActive(false);
-            }
-        }
-
-        public void ApplyStatusEffect(StatusEffectType effect) { }
-
-        #endregion
-
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.blue;
@@ -250,38 +222,6 @@ namespace AF.TS.Characters
                 Gizmos.DrawCube(m_targetPosition, Vector3.one * 0.1f);
             }
         }
-    }
-
-    [Serializable]
-    public class HealthSystemEditorHelper
-    {
-#if UNITY_EDITOR
-        [BoxGroup("Health System")]
-        [InlineEditor(InlineEditorModes.GUIAndPreview)]
-        [SerializeField] private Hurtbox[] m_hurtboxes = new Hurtbox[0];
-
-        private GameObject m_target;
-
-        [BoxGroup("Health System")]
-        [Button("Refresh")]
-        private void RefreshHurtboxes()
-        {
-            m_hurtboxes = this.m_target.GetComponentsInChildren<Hurtbox>();
-        }
-
-        public void OnValidate(GameObject target)
-        {
-            this.m_target = target;
-            RefreshHurtboxes();
-        }
-
-        public void OnTransformChildrenChanged(GameObject target)
-        {
-            Debug.Log($"[OnTransformChildrenChanged] Children of '{target.name}' have changed.");
-            this.m_target = target;
-            RefreshHurtboxes();
-        }
-#endif
     }
 
     public static class FOVGizmoDrawer
@@ -434,11 +374,5 @@ namespace AF.TS.Characters
 
             return inHorizontal && inVertical;
         }
-    }
-
-    public interface IHaveHealth
-    {
-        void TakeDamage(float damage);
-        public void ApplyStatusEffect(StatusEffectType effect);
     }
 }

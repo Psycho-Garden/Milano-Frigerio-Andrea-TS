@@ -12,7 +12,7 @@ namespace AF.TS.Characters
     [DefaultExecutionOrder(-95)]
     [HideMonoScript]
     [DisallowMultipleComponent]
-    public class Character : MonoBehaviour, IHaveHealth
+    public class Character : MonoBehaviour
     {
         #region Exposed Members --------------------------------------------------------------------
 
@@ -42,7 +42,7 @@ namespace AF.TS.Characters
 #if UNITY_EDITOR
 
         [TabGroup("References")]
-        [SerializeField, InlineProperty, HideLabel] 
+        [SerializeField, InlineProperty, HideLabel]
         private HealthSystemEditorHelper m_editorHelper = new();
 
         private void OnValidate()
@@ -66,27 +66,20 @@ namespace AF.TS.Characters
         [ShowInInspector, ReadOnly]
         protected CharacterInput m_input;
 
-        #endregion
-
-        #region Events -----------------------------------------------------------------------------
-
-        public event Action OnTakeDamage;
-        public event Action OnCharacterDied;
+        private HealthSystem m_healthSystem;
 
         #endregion
 
         #region Initialization ---------------------------------------------------------------------
 
-        protected void Awake() { }
+        protected void Awake()
+        {
+            this.m_healthSystem = GetComponent<HealthSystem>();
+        }
 
         protected void Start()
         {
             this.m_input = ServiceLocator.Get<CharacterInput>();
-
-            foreach (var hurtbox in GetComponentsInChildren<Hurtbox>())
-            {
-                hurtbox.SetOwner(this);
-            }
 
             this.m_movement?.Init(this);
             this.m_inventory?.Init(this);
@@ -141,6 +134,7 @@ namespace AF.TS.Characters
 
         #region Public Methods ---------------------------------------------------------------------
 
+        public HealthSystem HealthSystem => this.m_healthSystem;
         public CharacterInput Input => this.m_input;
         public Camera Camera => this.m_mainCamera;
 
@@ -170,21 +164,6 @@ namespace AF.TS.Characters
             this.m_stats = stats;
             this.m_stats?.Init(this);
             this.m_stats?.OnStart();
-        }
-
-        public void TakeDamage(float damage)
-        {
-            if (damage > 0f)
-            {
-                OnTakeDamage?.Invoke();
-            }
-
-            Stats.TakeDamage(damage);
-
-            if (Stats.Health <= 0f)
-            {
-                OnCharacterDied?.Invoke();
-            }
         }
 
         public void ApplyStatusEffect(StatusEffectType effect) { }
@@ -550,11 +529,6 @@ namespace AF.TS.Characters
         #region Exposed Members --------------------------------------------------------------------
 
         [BoxGroup("Stats")]
-        [Tooltip("Maximum Health")]
-        [SerializeField, MinValue(0)]
-        private float m_maxHealth = 100f;
-
-        [BoxGroup("Stats")]
         [Tooltip("Maximum Stamina")]
         [SerializeField, MinValue(0)]
         private float m_maxStamina = 100f;
@@ -568,21 +542,6 @@ namespace AF.TS.Characters
         [Tooltip("The rate at which stamina drains")]
         [SerializeField, MultiType(typeof(float), typeof(AnimationCurve))]
         private MultiTypeValue m_drainStamina;
-
-        [FoldoutGroup("Debug")]
-        [Tooltip("Current Health")]
-        [ShowInInspector, ReadOnly, ProgressBar(0, "m_maxHealth", ColorGetter = "red")]
-        public float CurrentHealth
-        {
-            get => m_currentHealth;
-            private set
-            {
-                if (Mathf.Approximately(m_currentHealth, value)) return;
-
-                m_currentHealth = value;
-                OnHealthChanged?.Invoke(HealthNormalized);
-            }
-        }
 
         [FoldoutGroup("Debug")]
         [Tooltip("Current Stamina")]
@@ -603,14 +562,12 @@ namespace AF.TS.Characters
 
         #region Runtime Members --------------------------------------------------------------------
 
-        private float m_currentHealth = 0f;
         private float m_currentStamina = 0f;
 
         #endregion
 
         #region Events -----------------------------------------------------------------------------
 
-        public event Action<float> OnHealthChanged;
         public event Action<float> OnStaminaChanged;
 
         #endregion
@@ -621,7 +578,6 @@ namespace AF.TS.Characters
         {
             base.Init(character);
 
-            m_currentHealth = m_maxHealth;
             m_currentStamina = m_maxStamina;
         }
 
@@ -653,26 +609,8 @@ namespace AF.TS.Characters
             CurrentStamina = Mathf.Max(CurrentStamina - drainAmount, 0f);
         }
 
-        public void RestoreHealth(float amount)
-        {
-            this.m_currentHealth = Mathf.Min(this.m_currentHealth + amount, this.m_maxHealth);
-
-            OnHealthChanged?.Invoke(HealthNormalized);
-        }
-
-        public void TakeDamage(float amount)
-        {
-            this.m_currentHealth -= amount;
-            this.m_currentHealth = Mathf.Max(this.m_currentHealth, 0f);
-
-            OnHealthChanged?.Invoke(HealthNormalized);
-        }
-
-        public float Health => this.m_currentHealth;
-
         public bool HasEnoughStamina(float required) => this.m_currentStamina >= required;
         public float StaminaNormalized => this.m_currentStamina / this.m_maxStamina;
-        public float HealthNormalized => this.m_currentHealth / this.m_maxHealth;
 
         #endregion
     }
@@ -730,7 +668,7 @@ namespace AF.TS.Characters
         public event Action<int, int, Sprite> OnWeaponChanged;
         public event Action<int, int> OnMagazineChanged;
         public event Action<int> OnAmmoChanged;
-        
+
         #endregion
 
         #region Initialization ---------------------------------------------------------------------
@@ -749,7 +687,7 @@ namespace AF.TS.Characters
                 this.m_perlinNoise = this.m_camera.GetComponent<CinemachineBasicMultiChannelPerlin>();
                 this.m_defaultAmplitudeGain = this.m_perlinNoise.AmplitudeGain;
             }
-            
+
             if (this.m_weapons.Length > 0)
             {
                 foreach (WeaponDataInventory weapon in this.m_weapons)
@@ -794,7 +732,7 @@ namespace AF.TS.Characters
                 this.m_weapons[m_currentWeaponIndex].GunController?.OnNextMagazine();
 
                 OnMagazineChanged?.Invoke(
-                    this.m_weapons[m_currentWeaponIndex].GunController.CurrentAmmo, 
+                    this.m_weapons[m_currentWeaponIndex].GunController.CurrentAmmo,
                     this.m_weapons[m_currentWeaponIndex].GunController.CurrentMagazineCapacity
                     );
             }
@@ -889,8 +827,8 @@ namespace AF.TS.Characters
                 );
 
             OnWeaponChanged?.Invoke(
-                this.m_weapons[this.m_currentWeaponIndex].GunController.CurrentAmmo, 
-                this.m_weapons[this.m_currentWeaponIndex].GunController.CurrentMagazineCapacity, 
+                this.m_weapons[this.m_currentWeaponIndex].GunController.CurrentAmmo,
+                this.m_weapons[this.m_currentWeaponIndex].GunController.CurrentMagazineCapacity,
                 this.m_weapons[this.m_currentWeaponIndex].GunController.Icon
                 );
 

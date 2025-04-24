@@ -144,11 +144,13 @@ namespace AF.TS.Weapons
 
             if (this.m_bulletData.HasRange && this.m_travelledDistance > this.m_bulletData.Range)
             {
+                Debug.Log($"{this.m_bulletData.name} | {this.name} → InstanceID: {GetInstanceID()} is out of range");
                 OnDispose();
             }
 
             if (this.m_bulletData.HasLifeTime && this.m_timeAlive > this.m_bulletData.LifeTime)
             {
+                Debug.Log($"{this.m_bulletData.name} | {this.name} → InstanceID: {GetInstanceID()} is out of life time");
                 OnDispose();
             }
 
@@ -186,6 +188,7 @@ namespace AF.TS.Weapons
 
         private void OnCollision(Collider other)
         {
+            Debug.Log($"{this.m_bulletData.name} | {this.name} → InstanceID: {GetInstanceID()} has collided with {other.name} → InstanceID: {other.GetInstanceID()}");
             m_onCollision?.Invoke();
 
             // Damage passed to interactable
@@ -193,7 +196,7 @@ namespace AF.TS.Weapons
             {
                 hurtbox.Interact(this.m_bulletData.Damage);
             }
-            else if(other.TryGetComponent(out IInteractable<string> interactable))
+            else if (other.TryGetComponent(out IInteractable<string> interactable))
             {
                 interactable.Interact(this.gameObject.tag);
             }
@@ -202,7 +205,7 @@ namespace AF.TS.Weapons
                 interactable2.Interact();
             }
 
-            if(other.TryGetComponent(out IIAmTarget target))
+            if (other.TryGetComponent(out IIAmTarget target))
             {
                 target.TakeDamage(DamageData.Create(this.m_bulletData.Damage, this.gameObject, this.m_bulletData.DamageType));
             }
@@ -326,6 +329,9 @@ namespace AF.TS.Weapons
         {
             base.OnStart(parent);
 
+            // temporarily
+            this.m_target = ServiceLocator.Get<Character>().transform;
+
             if (this.m_parent.BulletData.PhysicType == PhysicsMode.Physics)
             {
                 var rb = this.m_parent.GetRigidbody;
@@ -366,7 +372,7 @@ namespace AF.TS.Weapons
         {
             float delta = Time.deltaTime;
 
-            Vector3 toTarget = (target.position - bullet.transform.position).normalized;
+            Vector3 toTarget = (target.position + Vector3.up - bullet.transform.position).normalized;
             Quaternion targetRotation = Quaternion.LookRotation(toTarget);
 
             bullet.transform.rotation = Quaternion.RotateTowards(

@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
-using Sirenix.OdinInspector;
 using System;
-using DG.Tweening;
-using UnityEngine.XR;
+using Sirenix.OdinInspector;
+using AF.TS.Weapons;
+using AF.TS.Utils;
 
 namespace AF.TS.Characters
 {
     [HideMonoScript]
-    public class Boss : MonoBehaviour, IHaveHealth
+    public class Boss : MonoBehaviour
     {
         #region Exposed Members -----------------------------------------------------------------
 
@@ -59,7 +59,7 @@ namespace AF.TS.Characters
         private float m_maxFanPitchAngle = 30f;
 
         [FoldoutGroup("Orientation")]
-        [Tooltip(""), Unit(Units.Degree)]
+        [Tooltip(""), Unit(Units.Second)]
         [SerializeField]
         private float m_bodyReturnDelay = 2f;
 
@@ -92,6 +92,11 @@ namespace AF.TS.Characters
         [SerializeField, ChildGameObjectsOnly]
         private GameObject[] m_cores;
 
+        [FoldoutGroup("References")]
+        [Tooltip("List of weapons")]
+        [SerializeField, ChildGameObjectsOnly, RequiredListLength(2)]
+        private NewGunController[] m_weapons;
+
         #endregion
 
         #region Settings
@@ -102,6 +107,8 @@ namespace AF.TS.Characters
         private BoxCollider m_idleMovementBounds;
 
         #endregion
+
+        #region Debug
 
         [BoxGroup("States Settings")]
         [Tooltip("The states of the boss")]
@@ -123,24 +130,7 @@ namespace AF.TS.Characters
         [SerializeField]
         private GizmosType m_drawGizmos = GizmosType.None;
 
-#if UNITY_EDITOR
-
-        [FoldoutGroup("Debug")]
-        [SerializeField, InlineProperty, HideLabel] private HealthSystemEditorHelper m_editorHelper = new();
-
-        private void OnValidate()
-        {
-            m_editorHelper.OnValidate(this.gameObject);
-        }
-
-        private void OnTransformChildrenChanged()
-        {
-            m_editorHelper.OnTransformChildrenChanged(this.gameObject);
-        }
-
-#endif
-
-
+        #endregion
 
         #endregion
 
@@ -149,6 +139,9 @@ namespace AF.TS.Characters
         private float m_bodyReturnTimer = 0f;
         private Quaternion m_bodyInitialRotation;
         private Vector3 m_baseLocalPosition;
+        private Transform m_player;
+
+        private HealthSystem m_healthSystem;
 
         #endregion
 
@@ -156,6 +149,10 @@ namespace AF.TS.Characters
 
         private void Awake()
         {
+            ServiceLocator.Register<Boss>(this);
+
+            this.m_healthSystem = GetComponent<HealthSystem>();
+
             foreach (GameObject core in this.m_cores)
             {
                 core.SetActive(false);
@@ -164,16 +161,18 @@ namespace AF.TS.Characters
 
         private void Start()
         {
-            m_bodyInitialRotation = m_body.localRotation;
-            m_baseLocalPosition = m_mesh.localPosition;
+            this.m_player = ServiceLocator.Get<Character>().transform;
 
-            m_currentState = m_states[0];
-            m_currentState.OnStart(this);
+            this.m_bodyInitialRotation = this.m_body.localRotation;
+            this.m_baseLocalPosition = this.m_mesh.localPosition;
+
+            this.m_currentState = this.m_states[0];
+            this.m_currentState.OnStart(this);
         }
 
         private void OnDestroy()
         {
-            m_currentState.OnDispose();
+            this.m_currentState.OnDispose();
         }
 
         #endregion
@@ -182,19 +181,23 @@ namespace AF.TS.Characters
 
         private void Update()
         {
-            m_currentState.OnUpdate();
+            this.m_currentState.OnUpdate();
         }
 
         private void FixedUpdate()
         {
-            m_currentState.OnFixedUpdate();
+            this.m_currentState.OnFixedUpdate();
         }
 
         #endregion
 
         #region Public Methods ------------------------------------------------------------------
 
-        public BoxCollider IdleMovementBounds => m_idleMovementBounds;
+        public BoxCollider IdleMovementBounds => this.m_idleMovementBounds;
+        public Transform Player => this.m_player;
+        public HealthSystem HealthSystem => this.m_healthSystem;
+        public NewGunController[] Weapons => this.m_weapons;
+        public NewGunController GetWeapon(int index) => this.m_weapons[index];
 
         /// <summary>
         /// Change the state of the boss by state
@@ -202,7 +205,7 @@ namespace AF.TS.Characters
         /// <param name="state">New state</param>
         public void ChangeState(BaseState state)
         {
-            Debug.Log($"[<Color=green>Boss</colore>] Transition to state: {state.GetType().Name}");
+            Debug.Log($"[<Color=green>Boss</color>] Transition to state: {state.GetType().Name}");
 
             this.m_currentState.OnDispose();
             this.m_currentState = state;
@@ -217,19 +220,12 @@ namespace AF.TS.Characters
         {
             if (index < 0 || index >= this.m_states.Length)
             {
-                Debug.LogWarning($"[<Color=Red>Boss</colore>] Invalid state index: {index}");
+                Debug.LogWarning($"[<Color=Red>Boss</color>] Invalid state index: {index}");
                 return;
             }
 
             ChangeState(this.m_states[index]);
         }
-
-        public void TakeDamage(float damage)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ApplyStatusEffect(StatusEffectType effect) { }
 
         [FoldoutGroup("Debug")]
         [Tooltip("")]
@@ -265,51 +261,85 @@ namespace AF.TS.Characters
 
         public void HandleMovementAndOrientation(Vector3 targetPosition, Vector3? targetLookAt = null)
         {
-            Vector3 directionToTarget = (targetPosition - transform.position).normalized;
+            Vector3 directionToTarget = (targetPosition - this.transform.position).normalized;
 
             // ========== PITCH BODY ==========
             if (targetLookAt.HasValue)
             {
-                m_bodyReturnTimer = m_bodyReturnDelay;
+                this.m_bodyReturnTimer = this.m_bodyReturnDelay;
 
-                Vector3 dirLook = (targetLookAt.Value - m_body.position).normalized;
-                Quaternion desiredBodyRot = Quaternion.LookRotation(dirLook);
-                m_body.rotation = Quaternion.Slerp(m_body.rotation, desiredBodyRot, Time.deltaTime * m_bodyRotationSpeed);
+                Vector3 worldDir = (targetLookAt.Value - this.m_body.position).normalized;
 
-                float dot = Vector3.Dot(m_body.forward, dirLook);
-                if (dot < m_lookPrecisionThreshold)
+                // ========== YAW (rotate root on Y axis) ==========
+                Vector3 flatDir = new Vector3(worldDir.x, 0f, worldDir.z);
+                if (flatDir.sqrMagnitude > 0.0001f)
                 {
-                    // Too "Out axis" → Rotate the root
-                    Quaternion desiredRootRot = Quaternion.LookRotation(dirLook);
-                    transform.rotation = Quaternion.Slerp(transform.rotation, desiredRootRot, Time.deltaTime * m_gameObjectRotationSpeed);
+                    Quaternion desiredYaw = Quaternion.LookRotation(flatDir);
+                    this.transform.rotation = Quaternion.Slerp(this.transform.rotation, desiredYaw, Time.deltaTime * this.m_gameObjectRotationSpeed);
                 }
+
+                // ========== PITCH (rotate m_body on X axis) ==========
+
+                // Recalculate the new direction from body to target after yaw adjustment
+                Vector3 dirFromBodyToTarget = (targetLookAt.Value - this.m_body.position).normalized;
+
+                // Convert to local space to isolate pitch
+                Vector3 localDir = this.m_body.parent.InverseTransformDirection(dirFromBodyToTarget);
+
+                // Pitch is rotation around X axis — forward = Z+
+                float pitchAngle = Mathf.Atan2(localDir.y, localDir.z) * Mathf.Rad2Deg;
+
+                // Reverse the pitch if you want body to "lean down" instead of up
+                pitchAngle = -pitchAngle;
+
+                Quaternion desiredPitch = Quaternion.Euler(pitchAngle, 0f, 0f);
+                this.m_body.localRotation = Quaternion.Slerp(this.m_body.localRotation, desiredPitch, Time.deltaTime * this.m_bodyRotationSpeed);
             }
             else
             {
-                if (m_bodyReturnTimer > 0)
+                if (this.m_bodyReturnTimer > 0)
                 {
-                    m_bodyReturnTimer -= Time.deltaTime;
+                    this.m_bodyReturnTimer -= Time.deltaTime;
                 }
                 else
                 {
-                    m_body.localRotation = Quaternion.Slerp(m_body.localRotation, m_bodyInitialRotation, Time.deltaTime * m_bodyRotationSpeed);
+                    this.m_body.localRotation = Quaternion.Slerp(this.m_body.localRotation, this.m_bodyInitialRotation, Time.deltaTime * this.m_bodyRotationSpeed);
+                }
+
+                if ((targetPosition - this.transform.position).sqrMagnitude > 0.0001f)
+                {
+                    Vector3 flatDir = directionToTarget;
+                    flatDir.y = 0f;
+
+                    if (flatDir.sqrMagnitude > 0.0001f)
+                    {
+                        Quaternion lookRot = Quaternion.LookRotation(flatDir);
+                        this.transform.rotation = Quaternion.Slerp(this.transform.rotation, lookRot, Time.deltaTime * this.m_gameObjectRotationSpeed);
+                    }
                 }
             }
 
-            // ========== ROLL BOSS ==========
-            float sideFactor = Vector3.Dot(transform.right, directionToTarget); // -1 = sx, 1 = dx
-            float targetRoll = -sideFactor * m_maxRollAngle;
-            Quaternion currentRot = transform.localRotation;
-            Quaternion targetRot = Quaternion.Euler(currentRot.eulerAngles.x, currentRot.eulerAngles.y, targetRoll);
-            transform.localRotation = Quaternion.Slerp(currentRot, targetRot, Time.deltaTime * m_gameObjectRotationSpeed);
+            // ---------- ROLL BOSS (after yaw) ----------
+
+            // Calculate side factor for roll
+            float sideFactor = Vector3.Dot(this.transform.right, directionToTarget); // -1 = left, 1 = right
+            float targetRoll = -sideFactor * this.m_maxRollAngle;
+
+            // Apply roll on top of current yaw
+            Quaternion currentRot = this.transform.rotation;
+            Quaternion rollOffset = Quaternion.AngleAxis(targetRoll, this.transform.forward); // roll around local Z
+            Quaternion finalRot = currentRot * rollOffset;
+
+            this.transform.rotation = Quaternion.Slerp(currentRot, finalRot, Time.deltaTime * this.m_gameObjectRotationSpeed);
+
 
             // ========== PITCH FANS ==========
             Quaternion fanTargetRot;
 
-            if ((targetPosition - transform.position).sqrMagnitude > 0.0001f)
+            if ((targetPosition - this.transform.position).sqrMagnitude > 0.0001f)
             {
-                float forwardFactor = Vector3.Dot(transform.forward, directionToTarget); // -1 = back, 1 = forward
-                float pitchAmount = Mathf.Clamp(forwardFactor, -1f, 1f) * m_maxFanPitchAngle;
+                float forwardFactor = Vector3.Dot(this.transform.forward, directionToTarget); // -1 = back, 1 = forward
+                float pitchAmount = Mathf.Clamp(forwardFactor, -1f, 1f) * this.m_maxFanPitchAngle;
                 fanTargetRot = Quaternion.Euler(pitchAmount, 0f, 0f);
             }
             else
@@ -317,15 +347,15 @@ namespace AF.TS.Characters
                 fanTargetRot = Quaternion.identity;
             }
 
-            m_leftFan.localRotation = Quaternion.Slerp(m_leftFan.localRotation, fanTargetRot, Time.deltaTime * m_fansRotationSpeed);
-            m_rightFan.localRotation = Quaternion.Slerp(m_rightFan.localRotation, fanTargetRot, Time.deltaTime * m_fansRotationSpeed);
+            this.m_leftFan.localRotation = Quaternion.Slerp(this.m_leftFan.localRotation, fanTargetRot, Time.deltaTime * this.m_fansRotationSpeed);
+            this.m_rightFan.localRotation = Quaternion.Slerp(this.m_rightFan.localRotation, fanTargetRot, Time.deltaTime * this.m_fansRotationSpeed);
         }
 
         public void ApplyHoverEffect()
         {
-            float offsetY = Mathf.Sin(Time.time * m_hoverFrequency * Mathf.PI * 2f) * m_hoverAmplitude;
-            Vector3 newLocalPos = m_baseLocalPosition + new Vector3(0f, offsetY, 0f);
-            m_mesh.transform.localPosition = newLocalPos;
+            float offsetY = Mathf.Sin(Time.time * this.m_hoverFrequency * Mathf.PI * 2f) * this.m_hoverAmplitude;
+            Vector3 newLocalPos = this.m_baseLocalPosition + new Vector3(0f, offsetY, 0f);
+            this.m_mesh.transform.localPosition = newLocalPos;
         }
 
         #endregion
@@ -339,7 +369,7 @@ namespace AF.TS.Characters
                 return;
             }
 
-            m_currentState.OnDrawGizmos();
+            if (Application.isPlaying) this.m_currentState.OnDrawGizmos();
 
             DrawOpenDoorsAngles();
         }
@@ -351,7 +381,7 @@ namespace AF.TS.Characters
                 return;
             }
 
-            m_currentState.OnDrawGizmosSelected();
+            if (Application.isPlaying) this.m_currentState.OnDrawGizmosSelected();
 
             DrawOpenDoorsAngles();
         }
@@ -379,132 +409,105 @@ namespace AF.TS.Characters
     [Serializable]
     public enum GizmosType { None, All, Selected }
 
-    public interface IState
-    {
-        public void OnStart(Boss boss);
-        public void OnUpdate();
-        public void OnFixedUpdate();
-        public void OnDispose();
-        public void OnDrawGizmos();
-        public void OnDrawGizmosSelected();
-    }
-
     [Serializable]
-    public class BaseState : IState
+    public class DroneOverloadState : BaseState
     {
-        protected Boss m_boss;
-        protected Tween m_tween;
+        #region Exposed Members --------------------------------------------------------------------
 
-        public virtual void OnStart(Boss boss)
-        {
-            this.m_boss = boss;
-        }
-
-        public virtual void OnDispose()
-        {
-            if (this.m_tween != null && this.m_tween.IsActive() && this.m_tween.IsPlaying())
-            {
-                this.m_tween.Kill();
-                this.m_tween = null;
-            }
-        }
-
-        public virtual void OnFixedUpdate() { }
-
-        public virtual void OnUpdate() { }
-
-        public virtual void OnDrawGizmos() { }
-
-        public virtual void OnDrawGizmosSelected() { }
-
-        protected void LookAtSmooth(Vector3 moveTarget, Vector3? lookTarget = null)
-        {
-            m_boss.ApplyHoverEffect();
-            m_boss.HandleMovementAndOrientation(moveTarget, lookTarget);
-        }
-    }
-
-    [Serializable]
-    public class DroneIdleState : BaseState
-    {
-        [Tooltip("Delay"), Unit(Units.Second)]
+        [FoldoutGroup("Settings")]
+        [Tooltip("Duration of the overload firing phase"), Unit(Units.Second)]
         [SerializeField, MinValue(0f)]
-        private float m_idleDelay = 2f;
+        private float m_overloadDuration = 3f;
 
-        [Tooltip("Movement speed"), Unit(Units.MetersPerSecond)]
-        [SerializeField, MinValue(0.1f)]
-        private float m_moveSpeed = 1f;
+        [FoldoutGroup("Settings")]
+        [Tooltip("Cooldown duration after overload"), Unit(Units.Second)]
+        [SerializeField, MinValue(0f)]
+        private float m_cooldownDuration = 4f;
 
-        [Tooltip("Ease effect")]
-        [SerializeField]
-        private Ease m_moveEase = Ease.InOutSine;
+        [FoldoutGroup("Settings")]
+        [Tooltip("Index of the next state to transition into after cooldown")]
+        [SerializeField, MinValue(0)]
+        private int m_nextStateIndex = 1;
+
+        #endregion
+
+        #region Private Members ---------------------------------------------------------------------
 
         private float m_timer = 0f;
-        private Transform m_body;
-        private BoxCollider m_bounds;
-        private bool m_moving = false;
+        private bool m_firing = false;
+        private bool m_cooling = false;
+
+        #endregion
+
+        #region State Methods -----------------------------------------------------------------------
 
         public override void OnStart(Boss boss)
         {
             base.OnStart(boss);
 
-            this.m_body = boss.transform;
-            this.m_bounds = boss.IdleMovementBounds;
-            this.m_timer = this.m_idleDelay;
+            this.m_timer = this.m_overloadDuration;
+            this.m_firing = true;
+            this.m_cooling = false;
+
+            this.TriggerWeapons(true);
         }
 
         public override void OnUpdate()
         {
-            if (this.m_moving || this.m_bounds == null) return;
-
-            this.m_timer -= Time.deltaTime;
-            if (this.m_timer <= 0f)
+            if (this.m_firing)
             {
-                Vector3 nextTarget = GetRandomPositionInBounds();
-                float distance = Vector3.Distance(this.m_body.position, nextTarget);
-                float duration = distance / Mathf.Max(this.m_moveSpeed, 0.01f);
+                this.m_timer -= Time.deltaTime;
 
-                LookAtSmooth(nextTarget);
-                this.m_moving = true;
+                if (this.m_timer <= 0f)
+                {
+                    this.TriggerWeapons(false);
+                    this.m_boss.OpenDoors(); // Expose cores
+                    this.m_firing = false;
+                    this.m_cooling = true;
+                    this.m_timer = this.m_cooldownDuration;
+                }
+            }
+            else if (this.m_cooling)
+            {
+                this.m_boss.ApplyHoverEffect(); // Optional hover effect during cooldown
+                this.m_timer -= Time.deltaTime;
 
-                m_tween = this.m_body.DOMove(nextTarget, duration)
-                      .SetEase(this.m_moveEase)
-                      .OnUpdate(() =>
-                      {
-                          LookAtSmooth(nextTarget);
-                      })
-                      .OnComplete(() =>
-                      {
-                          this.m_timer = this.m_idleDelay;
-                          this.m_moving = false;
-                      });
+                if (this.m_timer <= 0f)
+                {
+                    this.m_boss.CloseDoors(); // Hide cores
+                    this.m_boss.ChangeState(this.m_nextStateIndex);
+                }
+            }
+        }
+
+        public override void OnDispose()
+        {
+            this.TriggerWeapons(false);
+        }
+
+        #endregion
+
+        #region Private Methods ---------------------------------------------------------------------
+
+        private void TriggerWeapons(bool state)
+        {
+            if (state)
+            {
+                foreach (NewGunController weapon in this.m_boss.Weapons)
+                {
+                    weapon.OnFireInput();
+                }
             }
             else
             {
-                LookAtSmooth(this.m_body.position + this.m_body.forward);
+                foreach (NewGunController weapon in this.m_boss.Weapons)
+                {
+                    weapon.OnFireRelease();
+                }
             }
         }
 
-        private Vector3 GetRandomPositionInBounds()
-        {
-            Vector3 center = this.m_bounds.center + this.m_bounds.transform.position;
-            Vector3 size = this.m_bounds.size * 0.5f;
-
-            float x = UnityEngine.Random.Range(-size.x, size.x);
-            float y = UnityEngine.Random.Range(-size.y, size.y);
-            float z = UnityEngine.Random.Range(-size.z, size.z);
-
-            return center + new Vector3(x, y, z);
-        }
-
-        public override void OnDrawGizmos()
-        {
-            if (this.m_bounds != null)
-            {
-                Gizmos.color = Color.cyan;
-                Gizmos.matrix = this.m_bounds.transform.localToWorldMatrix;
-                Gizmos.DrawWireCube(this.m_bounds.center, this.m_bounds.size);
-            }
-        }
+        #endregion
     }
+
 }

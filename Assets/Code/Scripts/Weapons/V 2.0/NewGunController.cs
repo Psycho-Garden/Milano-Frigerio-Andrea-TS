@@ -1,9 +1,9 @@
 ﻿using System;
 using UnityEngine;
+using Unity.Cinemachine;
 using Sirenix.OdinInspector;
 using DG.Tweening;
 using AF.TS.Audio;
-using Unity.Cinemachine;
 
 namespace AF.TS.Weapons
 {
@@ -206,16 +206,17 @@ namespace AF.TS.Weapons
 
         private void Awake()
         {
-            foreach (AmmoMagazine ammoMagazine in this.m_ammoMagazines)
-            {
-                ammoMagazine.Init();
-            }
-
             this.m_currentShootingMode = this.m_weaponData.ShootingMode(0);
             this.m_currentShootingMode.Init(this);
         }
 
-        private void Start() { }
+        private void Start()
+        {
+            foreach (AmmoMagazine ammoMagazine in this.m_ammoMagazines)
+            {
+                ammoMagazine.Init();
+            }
+        }
 
         private void OnDestroy()
         {

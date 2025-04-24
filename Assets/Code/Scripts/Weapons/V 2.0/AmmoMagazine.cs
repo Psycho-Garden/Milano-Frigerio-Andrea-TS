@@ -1,5 +1,6 @@
 using UnityEngine;
 using Sirenix.OdinInspector;
+using AF.TS.Utils;
 
 namespace AF.TS.Weapons
 {
@@ -32,6 +33,8 @@ namespace AF.TS.Weapons
         public void Init()
         {
             this.m_currentAmmo = this.m_startAmmo;
+
+            ServiceLocator.Get<ObjectPooler>().InitializePool(this.m_bulletPrefab, this.m_magazineSize);
         }
 
         public void GetAmmo()

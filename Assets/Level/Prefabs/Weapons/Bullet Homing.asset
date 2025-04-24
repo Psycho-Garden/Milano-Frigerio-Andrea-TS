@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8649d689636b64944a631a2876444768, type: 3}
-  m_Name: BulletData
+  m_Name: Bullet Homing
   m_EditorClassIdentifier: 
   m_physicType: 0
-  m_speed: 10
-  m_hasRange: 1
+  m_speed: 1
+  m_hasRange: 0
   m_range:
     selectedIndex: 0
     m_float: 100
@@ -42,10 +42,10 @@ MonoBehaviour:
         m_RotationOrder: 4
       m_ConstantMin: 0
       m_ConstantMax: 1
-  m_hasLifetime: 0
+  m_hasLifetime: 1
   m_lifetime:
     selectedIndex: 0
-    m_float: 10
+    m_float: 30
     m_vector2: {x: 0, y: 0}
     m_curve:
       serializedVersion: 2

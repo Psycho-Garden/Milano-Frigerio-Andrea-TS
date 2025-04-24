@@ -64,6 +64,30 @@ namespace AF.TS.Utils
         [SerializeField, ColorPalette]
         private Color m_gizmoColorTriggerExit = Color.red;
 
+        [FoldoutGroup("Testing")]
+        [Tooltip("When pressed, the event will be triggered.")]
+        [Button("Test Trigger Enter")]
+        private void TestTriggerEnter()
+        {
+            TriggerEvent(this.m_onTriggerEnter, null);
+        }
+
+        [FoldoutGroup("Testing")]
+        [Tooltip("When pressed, the event will be triggered.")]
+        [Button("Test Trigger Stay")]
+        private void TestTriggerStay()
+        {
+            TriggerEvent(this.m_onTriggerStay, null);
+        }
+
+        [FoldoutGroup("Testing")]
+        [Tooltip("When pressed, the event will be triggered.")]
+        [Button("Test Trigger Exit")]
+        private void TestTriggerExit()
+        {
+            TriggerEvent(this.m_onTriggerExit, null);
+        }
+
         #endregion
 
         #region Validation -------------------------------------------------------------------------

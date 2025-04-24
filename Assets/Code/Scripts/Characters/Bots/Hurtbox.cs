@@ -3,6 +3,7 @@ using Sirenix.OdinInspector;
 using AF.TS.Items;
 using AF.TS.Utils;
 using AF.TS.Weapons;
+using System;
 
 namespace AF.TS.Characters
 {
@@ -18,9 +19,9 @@ namespace AF.TS.Characters
         [BoxGroup("Health System"), PropertyOrder(-1)]
         [Tooltip("Reference to the character that owns this hurtbox.")]
         [ShowInInspector, ReadOnly]
-        private IHaveHealth m_owner;
+        private HealthSystem m_owner;
 
-        public void SetOwner(IHaveHealth owner)
+        public void SetOwner(HealthSystem owner)
         {
             this.m_owner = owner;
         }
@@ -43,6 +44,7 @@ namespace AF.TS.Characters
         }
     }
 
+    [Flags]
     public enum DamageType
     {
         Physical,
@@ -52,6 +54,7 @@ namespace AF.TS.Characters
         Poison
     }
 
+    [Flags]
     public enum StatusEffectType
     {
         None,

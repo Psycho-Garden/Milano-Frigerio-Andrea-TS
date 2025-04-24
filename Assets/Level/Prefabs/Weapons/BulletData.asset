@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8649d689636b64944a631a2876444768, type: 3}
-  m_Name: New Riffle Bullet
+  m_Name: BulletData
   m_EditorClassIdentifier: 
   m_physicType: 0
   m_speed: 10
@@ -45,7 +45,7 @@ MonoBehaviour:
   m_hasLifetime: 0
   m_lifetime:
     selectedIndex: 0
-    m_float: 0
+    m_float: 10
     m_vector2: {x: 0, y: 0}
     m_curve:
       serializedVersion: 2
@@ -72,26 +72,80 @@ MonoBehaviour:
       m_ConstantMax: 1
   m_spread:
     selectedIndex: 0
-    m_float: 0
+    m_float: 1
     m_vector2: {x: 0, y: 0}
     m_curve:
       serializedVersion: 2
-      m_Curve: []
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 2
+        outSlope: 2
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_minMaxCurve:
       m_Mode: 0
-      m_CurveMultiplier: 0
+      m_CurveMultiplier: 1
       m_CurveMin:
         serializedVersion: 2
-        m_Curve: []
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
       m_CurveMax:
         serializedVersion: 2
-        m_Curve: []
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
@@ -107,9 +161,9 @@ MonoBehaviour:
   m_gravityMultiplier: 1
   m_impactLayers:
     serializedVersion: 2
-    m_Bits: 209
-  m_radius: 0.01
-  m_useAdvancedBallistics: 0
+    m_Bits: 337
+  m_radius: 1
+  m_useAdvancedBallistics: 1
   m_dropOverDistance:
     selectedIndex: 0
     m_float: 0
@@ -192,10 +246,10 @@ MonoBehaviour:
         m_RotationOrder: 4
       m_ConstantMin: 0
       m_ConstantMax: 1
-  m_ricochetEnabled: 0
+  m_ricochetEnabled: 1
   m_ricochetCount: 1
   m_impactSound: {fileID: 0}
   m_impactEffect: {fileID: 0}
-  m_drawGizmos: 0
+  m_drawGizmos: 1
   m_drawPath: 0
   m_drawBody: 0
