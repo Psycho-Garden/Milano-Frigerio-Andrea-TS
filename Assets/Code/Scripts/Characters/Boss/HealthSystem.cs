@@ -23,12 +23,12 @@ namespace AF.TS.Characters
 
         [FoldoutGroup("Stats")]
         [Tooltip("")]
-        [ShowInInspector, ReadOnly]
+        [SerializeField]
         private DamageType m_vulnerabilityDamage = DamageType.Physical;
 
         [FoldoutGroup("Stats")]
         [Tooltip("The current health")]
-        [ShowInInspector, ReadOnly]
+        [SerializeField]
         private StatusEffectType m_vulnerabilityStatusEffect = StatusEffectType.None;
 
         [FoldoutGroup("On Death")]

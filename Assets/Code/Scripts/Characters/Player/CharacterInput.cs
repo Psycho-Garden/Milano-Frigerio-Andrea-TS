@@ -17,7 +17,7 @@ namespace AF.TS.Characters
         bool InteractPressed { get; }
         bool MenuPressed { get; }
         bool IsAiming { get; }
-        bool ShootPressed { get; }
+        bool ShootHeld { get; }
     }
 
     [DefaultExecutionOrder(-99)]
@@ -165,7 +165,7 @@ namespace AF.TS.Characters
         public bool MenuPressed => m_menuAction.WasPressedThisFrame();
 
         public bool IsAiming => m_aimAction.IsPressed();
-        public bool ShootPressed => m_shootAction.WasPressedThisFrame();
+        public bool ShootHeld => m_shootAction.IsPressed();
         public bool ReloadPressed => m_reloadAction.WasPressedThisFrame();
         public bool PrimaryGunPressed => m_primaryGunAction.WasPressedThisFrame();
         public bool SecondaryGunPressed => m_secondaryGunAction.WasPressedThisFrame();

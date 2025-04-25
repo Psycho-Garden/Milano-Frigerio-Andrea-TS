@@ -81,11 +81,6 @@ namespace AF.TS.Weapons
                 }
             }
         }
-
-        public override void TriggerReleased()
-        {
-            this.m_shotsRemaining = 0;
-        }
     }
 
     [Serializable]

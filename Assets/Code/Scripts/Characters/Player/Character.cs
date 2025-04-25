@@ -39,24 +39,6 @@ namespace AF.TS.Characters
         [SerializeField, Required, SceneObjectsOnly]
         protected Camera m_mainCamera;
 
-#if UNITY_EDITOR
-
-        [TabGroup("References")]
-        [SerializeField, InlineProperty, HideLabel]
-        private HealthSystemEditorHelper m_editorHelper = new();
-
-        private void OnValidate()
-        {
-            m_editorHelper.OnValidate(this.gameObject);
-        }
-
-        private void OnTransformChildrenChanged()
-        {
-            m_editorHelper.OnTransformChildrenChanged(this.gameObject);
-        }
-
-#endif
-
         #endregion
 
         #region Private Members --------------------------------------------------------------------
@@ -737,13 +719,15 @@ namespace AF.TS.Characters
                     );
             }
 
-            if (Character.Input.ShootPressed)
+            if (Character.Input.ShootHeld)
             {
+                Debug.Log("<color=green>Shooting</color>");
                 this.m_weapons[m_currentWeaponIndex].GunController?.OnFireInput();
             }
 
-            if (!Character.Input.ShootPressed)
+            if (!Character.Input.ShootHeld)
             {
+                Debug.Log("<color=red>Not Shooting</color>");
                 this.m_weapons[m_currentWeaponIndex].GunController?.OnFireRelease();
             }
 

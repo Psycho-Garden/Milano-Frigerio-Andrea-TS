@@ -2091,6 +2091,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_maxHealth: 100
   m_baseMultiplier: 1
+  m_vulnerabilityDamage: 0
+  m_vulnerabilityStatusEffect: 0
   m_onDeath:
     m_PersistentCalls:
       m_Calls: []
@@ -9349,7 +9351,7 @@ MonoBehaviour:
   - rid: 5750134086104514738
   - rid: 5750134105419546717
   - rid: 5750134105419546815
-  m_drawGizmos: 1
+  m_drawGizmos: 2
   references:
     version: 2
     RefIds:
@@ -9391,6 +9393,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_maxHealth: 100
   m_baseMultiplier: 1
+  m_vulnerabilityDamage: 0
+  m_vulnerabilityStatusEffect: 0
   m_onDeath:
     m_PersistentCalls:
       m_Calls:
@@ -44036,9 +44040,6 @@ MonoBehaviour:
   m_inventory:
     rid: 5750134041234637010
   m_mainCamera: {fileID: 1575996797}
-  m_editorHelper:
-    m_hurtboxes:
-    - {fileID: 1377197824}
   references:
     version: 2
     RefIds:
@@ -44265,6 +44266,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_maxHealth: 100
   m_baseMultiplier: 1
+  m_vulnerabilityDamage: 0
+  m_vulnerabilityStatusEffect: 0
   m_onDeath:
     m_PersistentCalls:
       m_Calls: []

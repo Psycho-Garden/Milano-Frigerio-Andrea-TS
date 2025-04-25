@@ -107,7 +107,7 @@ MonoBehaviour:
   m_gravityMultiplier: 1
   m_impactLayers:
     serializedVersion: 2
-    m_Bits: 337
+    m_Bits: 465
   m_radius: 0.01
   m_useAdvancedBallistics: 0
   m_dropOverDistance:
