@@ -4,6 +4,7 @@ using Unity.Cinemachine;
 using Sirenix.OdinInspector;
 using DG.Tweening;
 using AF.TS.Audio;
+using AF.TS.Utils;
 
 namespace AF.TS.Weapons
 {
@@ -208,6 +209,9 @@ namespace AF.TS.Weapons
         {
             this.m_currentShootingMode = this.m_weaponData.ShootingMode(0);
             this.m_currentShootingMode.Init(this);
+
+            ServiceLocator.Get<ObjectPooler>().InitializePool(this.m_weaponData.MuzzleFlashPrefab, 3);
+            ServiceLocator.Get<ObjectPooler>().InitializePool(this.m_weaponData.CasingPrefab, 3);
         }
 
         private void Start()
@@ -264,7 +268,6 @@ namespace AF.TS.Weapons
             if (!this.m_ammoMagazines[this.m_currentMagazineIndex].Empty())
             {
                 this.m_currentShootingMode.TriggerPressed();
-                OnShot?.Invoke();
             }
             else
             {
@@ -405,6 +408,8 @@ namespace AF.TS.Weapons
             {
                 TryReload();
             }
+
+            OnShotEnd?.Invoke();
         }
 
         #endregion

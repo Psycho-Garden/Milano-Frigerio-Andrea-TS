@@ -49,11 +49,6 @@ namespace AD.TS.UI.HUD
         [SerializeField, Required, SceneObjectsOnly]
         private Slider m_healthBarBoss;
 
-        [FoldoutGroup("Menu")]
-        [Tooltip("Menu")]
-        [SerializeField, Required, SceneObjectsOnly]
-        private GameObject m_menu;
-
         [FoldoutGroup("Debug")]
         [Tooltip("Target character")]
         [ShowInInspector, ReadOnly]
@@ -72,9 +67,6 @@ namespace AD.TS.UI.HUD
             m_targetBoss = ServiceLocator.Get<Boss>();
 
             m_input = ServiceLocator.Get<CharacterInput>();
-
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
         }
 
         private void Start()
@@ -109,17 +101,6 @@ namespace AD.TS.UI.HUD
             m_targetPlayer.Inventory.OnAmmoChanged -= UpdateAmmo;
 
             m_targetBoss.HealthSystem.OnHealthChanged -= UpdateHealthBoss;
-        }
-
-        private void Update()
-        {
-            if (this.m_input.MenuPressed)
-            {
-                this.m_menu.SetActive(!this.m_menu.activeSelf);
-                Cursor.lockState = this.m_menu.activeSelf ? CursorLockMode.None : CursorLockMode.Locked;
-                Cursor.visible = this.m_menu.activeSelf;
-                Time.timeScale = this.m_menu.activeSelf ? 0f : 1f;
-            }
         }
 
         #region Private Functions --------------------------------------------------------
@@ -169,4 +150,5 @@ namespace AD.TS.UI.HUD
 
         #endregion
     }
+
 }

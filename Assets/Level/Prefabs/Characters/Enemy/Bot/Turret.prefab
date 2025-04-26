@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8398732130793029923}
   - component: {fileID: 1542943248512555851}
   - component: {fileID: 3060160914522726743}
+  - component: {fileID: 541641566778373965}
   m_Layer: 0
   m_Name: Turret
   m_TagString: Untagged
@@ -80,11 +81,6 @@ MonoBehaviour:
   m_bodyRotationSpeed: 0.25
   m_gunRotationSpeed: 0.15
   m_resetAimDelay: 2
-  m_health: 100
-  m_editorHelper:
-    m_hurtboxes:
-    - {fileID: 3060160914522726743}
-    - {fileID: 4052963762839074434}
 --- !u!114 &1542943248512555851
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -124,7 +120,42 @@ MonoBehaviour:
   m_showColliders: 1
   m_showCollidesrOnlyEnabled: 1
   m_gizmoColor: {r: 0, g: 1, b: 0, a: 0.29803923}
-  damageMultiplier: 1
+  m_damageMultiplier: 1
+--- !u!114 &541641566778373965
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 857936640166699152}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e408d48f4f11e284995f87c9363936e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_maxHealth: 100
+  m_baseMultiplier: 1
+  m_vulnerabilityDamage: 0
+  m_vulnerabilityStatusEffect: 0
+  m_onDeath:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 857936640166699152}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  m_editorHelper:
+    m_hurtboxes:
+    - {fileID: 3060160914522726743}
+    - {fileID: 4052963762839074434}
 --- !u!1 &2259381469254487422
 GameObject:
   m_ObjectHideFlags: 0
@@ -488,7 +519,7 @@ MonoBehaviour:
   m_showColliders: 1
   m_showCollidesrOnlyEnabled: 1
   m_gizmoColor: {r: 1, g: 0, b: 0.022580147, a: 0.4}
-  damageMultiplier: 5
+  m_damageMultiplier: 1
 --- !u!1 &8677853318357048705
 GameObject:
   m_ObjectHideFlags: 0
@@ -619,7 +650,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3434284847166926803, guid: bcbd124ff177a1c45bf95680268662a9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.0000000016885074
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3434284847166926803, guid: bcbd124ff177a1c45bf95680268662a9, type: 3}
       propertyPath: m_LocalPosition.y
@@ -627,7 +658,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3434284847166926803, guid: bcbd124ff177a1c45bf95680268662a9, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.000000023694811
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3434284847166926803, guid: bcbd124ff177a1c45bf95680268662a9, type: 3}
       propertyPath: m_LocalRotation.w
@@ -657,6 +688,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5004169479221442240, guid: bcbd124ff177a1c45bf95680268662a9, type: 3}
+      propertyPath: m_weaponData
+      value: 
+      objectReference: {fileID: 11400000, guid: 99dac0bc42a436f4a8c7b80e3e7a4554, type: 2}
     - target: {fileID: 7501633069590297698, guid: bcbd124ff177a1c45bf95680268662a9, type: 3}
       propertyPath: m_Name
       value: New Rifle

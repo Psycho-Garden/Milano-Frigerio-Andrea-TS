@@ -163,7 +163,6 @@ namespace AF.TS.Weapons
         private void CheckCollision()
         {
             int hits = Physics.SphereCastNonAlloc(this.transform.position, this.m_bulletData.Radius, this.transform.forward, this.m_collisions, 0f, this.m_bulletData.ImpactLayers);
-
             if (hits > 0)
             {
                 OnCollision(this.m_collisions[0].collider);
@@ -191,20 +190,11 @@ namespace AF.TS.Weapons
             Debug.Log($"{this.m_bulletData.name} | {this.name} → InstanceID: {GetInstanceID()} has collided with {other.name} → InstanceID: {other.GetInstanceID()}");
             m_onCollision?.Invoke();
 
-            // Damage passed to interactable
-            if (other.TryGetComponent(out IInteractable<float> hurtbox))
-            {
-                hurtbox.Interact(this.m_bulletData.Damage);
-            }
-            else if (other.TryGetComponent(out IInteractable<string> interactable))
-            {
-                interactable.Interact(this.gameObject.tag);
-            }
-            else if (other.TryGetComponent(out IInteractable interactable2))
-            {
-                interactable2.Interact();
-            }
 
+            if (other.TryGetComponent(out IInteractable interactable))
+            {
+                interactable.Interact();
+            }
             if (other.TryGetComponent(out IIAmTarget target))
             {
                 target.TakeDamage(DamageData.Create(this.m_bulletData.Damage, this.gameObject, this.m_bulletData.DamageType));
@@ -212,12 +202,17 @@ namespace AF.TS.Weapons
 
             if (this.m_bulletData.ImpactEffect != null)
             {
-                ServiceLocator.Get<ObjectPooler>().Get(this.m_bulletData.ImpactEffect.name, 0.1f).transform.SetPositionAndRotation(this.m_collisions[0].point, Quaternion.Euler(-this.m_collisions[0].normal));
+                Debug.DrawRay(this.transform.position, this.m_collisions[0].normal, Color.magenta, 5f);
+
+                ServiceLocator.Get<ObjectPooler>()
+                    .Get(this.m_bulletData.ImpactEffect.name, 1f)
+                    .transform.SetPositionAndRotation(this.transform.position, Quaternion.Euler(this.m_collisions[0].normal));
             }
 
             if (this.m_bulletData.ImpactSound != null)
             {
-                ServiceLocator.Get<ObjectPooler>().Get("AudioSource", 0.5f).GetComponent<AudioSource>().PlayOneShot(this.m_bulletData.ImpactSound);
+                ServiceLocator.Get<ObjectPooler>().Get("AudioSource", 0.5f)
+                    .GetComponent<AudioSource>().PlayOneShot(this.m_bulletData.ImpactSound);
             }
 
             OnDispose();

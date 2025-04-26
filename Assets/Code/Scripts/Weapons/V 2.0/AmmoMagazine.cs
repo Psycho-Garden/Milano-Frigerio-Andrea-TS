@@ -35,6 +35,8 @@ namespace AF.TS.Weapons
             this.m_currentAmmo = this.m_startAmmo;
 
             ServiceLocator.Get<ObjectPooler>().InitializePool(this.m_bulletPrefab, this.m_magazineSize);
+            ServiceLocator.Get<ObjectPooler>()
+                .InitializePool(this.m_bulletPrefab.GetComponent<NewBullet>().BulletData.ImpactEffect, this.m_magazineSize);
         }
 
         public void GetAmmo()

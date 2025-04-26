@@ -3,6 +3,7 @@ using System;
 using Sirenix.OdinInspector;
 using DG.Tweening;
 using AF.TS.Weapons;
+using UnityEngine.EventSystems;
 
 namespace AF.TS.Characters
 {
@@ -30,6 +31,11 @@ namespace AF.TS.Characters
         [Tooltip("Index of the overload state")]
         [SerializeField, MinValue(0)]
         private int m_nextStateIndex = 2;
+
+        [FoldoutGroup("Settings")]
+        [Tooltip("Health level condition to switch to the overload state")]
+        [SerializeField, Range(0f, 1f)]
+        private float m_healthLevelCondition = 0.5f;
 
         [FoldoutGroup("Settings")]
         [Tooltip("Layers considered obstacles for raycast")]
@@ -97,7 +103,7 @@ namespace AF.TS.Characters
                 this.SelectNextPosition();
             }
 
-            if (this.m_boss != null && this.m_boss.HealthSystem.HealthNormalized <= 0.5f)
+            if (this.m_boss != null && this.m_boss.HealthSystem.HealthNormalized <= this.m_healthLevelCondition)
             {
                 this.m_boss.ChangeState(this.m_nextStateIndex);
             }

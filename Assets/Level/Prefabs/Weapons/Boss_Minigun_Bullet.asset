@@ -97,7 +97,7 @@ MonoBehaviour:
         m_RotationOrder: 4
       m_ConstantMin: 0
       m_ConstantMax: 1
-  m_damage: 1
+  m_damage: 0.1
   m_damageType: 0
   m_statusEffect: 0
   m_penetration: 0

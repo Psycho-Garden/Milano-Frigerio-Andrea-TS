@@ -721,13 +721,11 @@ namespace AF.TS.Characters
 
             if (Character.Input.ShootHeld)
             {
-                Debug.Log("<color=green>Shooting</color>");
                 this.m_weapons[m_currentWeaponIndex].GunController?.OnFireInput();
             }
 
             if (!Character.Input.ShootHeld)
             {
-                Debug.Log("<color=red>Not Shooting</color>");
                 this.m_weapons[m_currentWeaponIndex].GunController?.OnFireRelease();
             }
 
@@ -800,7 +798,7 @@ namespace AF.TS.Characters
 
             this.m_weapons[this.m_currentWeaponIndex].GunController.gameObject.SetActive(false);
 
-            this.m_weapons[m_currentWeaponIndex].GunController.OnShot -= OnAmmo;
+            this.m_weapons[m_currentWeaponIndex].GunController.OnShotEnd -= OnAmmo;
             this.m_weapons[m_currentWeaponIndex].GunController.OnReloadComplete -= OnAmmo;
 
             this.m_currentWeaponIndex = index;
@@ -816,7 +814,7 @@ namespace AF.TS.Characters
                 this.m_weapons[this.m_currentWeaponIndex].GunController.Icon
                 );
 
-            this.m_weapons[m_currentWeaponIndex].GunController.OnShot += OnAmmo;
+            this.m_weapons[m_currentWeaponIndex].GunController.OnShotEnd += OnAmmo;
             this.m_weapons[m_currentWeaponIndex].GunController.OnReloadComplete += OnAmmo;
         }
 

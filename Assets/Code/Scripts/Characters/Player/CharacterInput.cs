@@ -155,23 +155,28 @@ namespace AF.TS.Characters
 
         private void OnDisable() => ServiceLocator.Unregister<CharacterInput>();
 
-        public Vector2 MoveInput => m_moveAction.ReadValue<Vector2>();
-        public Vector2 LookInput => m_lookAction.ReadValue<Vector2>();
-        public bool IsRunning => m_runAction.IsPressed();
-        public bool IsCrouching => m_crouchAction.IsPressed();
-        public bool JumpPressed => m_jumpAction.WasPressedThisFrame();
-        public bool InteractPressed => m_interactAction.WasPressedThisFrame();
+        private bool IsGamePaused => Time.timeScale == 0;
 
-        public bool MenuPressed => m_menuAction.WasPressedThisFrame();
+        private bool AllowGameplayInput => !this.IsGamePaused;
 
-        public bool IsAiming => m_aimAction.IsPressed();
-        public bool ShootHeld => m_shootAction.IsPressed();
-        public bool ReloadPressed => m_reloadAction.WasPressedThisFrame();
-        public bool PrimaryGunPressed => m_primaryGunAction.WasPressedThisFrame();
-        public bool SecondaryGunPressed => m_secondaryGunAction.WasPressedThisFrame();
-        public bool TertiaryGunPressed => m_tertiaryGunAction.WasPressedThisFrame();
-        public bool SwitchActiveWeaponPressed => m_switchActiveWeaponAction.WasPressedThisFrame();
-        public bool SwitchShootingModePressed => m_switchShootingModeAction.WasPressedThisFrame();
-        public bool SwitchAmmoMagazinePressed => m_switchAmmoMagazineAction.WasPressedThisFrame();
+        public Vector2 MoveInput => this.AllowGameplayInput ? this.m_moveAction.ReadValue<Vector2>() : Vector2.zero;
+        public Vector2 LookInput => this.AllowGameplayInput ? this.m_lookAction.ReadValue<Vector2>() : Vector2.zero;
+        public bool IsRunning => this.AllowGameplayInput && this.m_runAction.IsPressed();
+        public bool IsCrouching => this.AllowGameplayInput && this.m_crouchAction.IsPressed();
+        public bool JumpPressed => this.AllowGameplayInput && this.m_jumpAction.WasPressedThisFrame();
+        public bool InteractPressed => this.AllowGameplayInput && this.m_interactAction.WasPressedThisFrame();
+
+        public bool MenuPressed => this.m_menuAction.WasPressedThisFrame();
+
+        public bool IsAiming => this.AllowGameplayInput && this.m_aimAction.IsPressed();
+        public bool ShootHeld => this.AllowGameplayInput && this.m_shootAction.IsPressed();
+        public bool ReloadPressed => this.AllowGameplayInput && this.m_reloadAction.WasPressedThisFrame();
+        public bool PrimaryGunPressed => this.AllowGameplayInput && this.m_primaryGunAction.WasPressedThisFrame();
+        public bool SecondaryGunPressed => this.AllowGameplayInput && this.m_secondaryGunAction.WasPressedThisFrame();
+        public bool TertiaryGunPressed => this.AllowGameplayInput && this.m_tertiaryGunAction.WasPressedThisFrame();
+        public bool SwitchActiveWeaponPressed => this.AllowGameplayInput && this.m_switchActiveWeaponAction.WasPressedThisFrame();
+        public bool SwitchShootingModePressed => this.AllowGameplayInput && this.m_switchShootingModeAction.WasPressedThisFrame();
+        public bool SwitchAmmoMagazinePressed => this.AllowGameplayInput && this.m_switchAmmoMagazineAction.WasPressedThisFrame();
+
     }
 }

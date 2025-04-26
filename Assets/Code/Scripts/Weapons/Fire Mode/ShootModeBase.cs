@@ -39,12 +39,20 @@ namespace AF.TS.Weapons
     [Serializable]
     public class SemiAutoMode : ShootModeBase
     {
+        private bool m_shot = false;
+
         public override void TriggerPressed()
         {
-            if (this.m_controller.CanShoot())
+            if (this.m_controller.CanShoot() && !this.m_shot)
             {
                 Shoot();
+                this.m_shot = true;
             }
+        }
+
+        public override void TriggerReleased()
+        {
+            this.m_shot = false;
         }
     }
 
@@ -57,12 +65,20 @@ namespace AF.TS.Weapons
         private int m_shotsRemaining = 0;
         private float m_lastShotTime = 0f;
 
+        private bool m_shot = false;
+
         public override void TriggerPressed()
         {
-            if (this.m_shotsRemaining <= 0 && this.m_controller.CanShoot())
+            if (this.m_shotsRemaining <= 0 && this.m_controller.CanShoot() && !this.m_shot)
             {
                 this.m_shotsRemaining = this.m_burstCount;
+                this.m_shot = true;
             }
+        }
+
+        public override void TriggerReleased()
+        {
+            this.m_shot = false;
         }
 
         public override void OnUpdate()
