@@ -382,16 +382,19 @@ namespace AF.TS.Weapons
                 );
             }
 
-            if (this.m_weaponData.CasingPrefab != null)
+            if (this.m_weaponData.CasingPrefab != null && this.m_extractorPoint != null)
             {
                 foreach (Point extractorPoint in this.m_extractorPoint)
                 {
-                    GunUtilities.EjectCasing(
-                        this.transform,
-                        this.m_weaponData.CasingPrefab.name,
-                        extractorPoint.Position,
-                        extractorPoint.Rotation
-                    );
+                    if (extractorPoint != null) // extra safety
+                    {
+                        GunUtilities.EjectCasing(
+                            this.transform,
+                            this.m_weaponData.CasingPrefab.name,
+                            extractorPoint.Position,
+                            extractorPoint.Rotation
+                        );
+                    }
                 }
             }
 

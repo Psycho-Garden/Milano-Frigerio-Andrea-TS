@@ -16,6 +16,11 @@ namespace AF.TS.Utils
         public static void TriggerEventCheckAuto(this TriggerEvent triggerEvent, Object callingInstance)
         {
 #if UNITY_EDITOR
+            if (triggerEvent == null || callingInstance == null)
+            {
+                return;
+            }
+
             if (HARD_BLOCK_SELF_REFERENCE)
             {
                 TriggerEventCheckAndRemoveSelfReference(triggerEvent, callingInstance);

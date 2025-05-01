@@ -37,15 +37,24 @@ namespace AF.TS.Weapons
 
         public static void EjectCasing(Transform transform, string prefabName, Vector3 position, Vector3 rotation)
         {
+            if (transform == null) return; // Ensure the source transform is valid
+
             var pooler = ServiceLocator.Get<ObjectPooler>();
             GameObject casing = pooler.Get(prefabName);
 
+            if (casing == null) return; // Ensure the casing prefab was successfully retrieved
+
             Transform casingTransform = casing.transform;
 
+            // Kill existing tweens (if any) on the casingTransform
+            casingTransform.DOKill();
+
+            // Set initial position and rotation
             Vector3 ejectPosition = transform.TransformPoint(position);
             Quaternion ejectRotation = transform.rotation * Quaternion.Euler(rotation);
             casingTransform.SetPositionAndRotation(ejectPosition, ejectRotation);
 
+            // Calculate target position and movement direction
             Vector3 ejectDir = transform.right + transform.up * 0.5f + Random.insideUnitSphere * 0.2f;
             float distance = Random.Range(0.2f, 0.5f);
             Vector3 targetPos = ejectPosition + ejectDir * distance;
@@ -56,20 +65,33 @@ namespace AF.TS.Weapons
             Vector3 startPos = casingTransform.position;
             float t = 0f;
 
-            DOTween.To(() => t, x => t = x, 1f, duration)
+            // Animate casing movement with an arc trajectory
+            var moveTween = DOTween.To(() => t, x => t = x, 1f, duration)
+                .SetTarget(casingTransform)
                 .OnUpdate(() =>
                 {
+                    if (casingTransform == null) return;
+
                     Vector3 flatPos = Vector3.Lerp(startPos, targetPos, t);
                     float heightOffset = Mathf.Sin(t * Mathf.PI) * arcHeight;
                     casingTransform.position = flatPos + Vector3.up * heightOffset;
                 })
-                .OnComplete(() => pooler.ReturnToPool(casing));
+                .OnComplete(() =>
+                {
+                    if (casing != null)
+                    {
+                        casingTransform.DOKill(); // Ensure tweens are killed before returning to pool
+                        pooler.ReturnToPool(casing);
+                    }
+                });
 
-            // Rotazione casuale
-            casingTransform
+            // Random rotation animation
+            var rotateTween = casingTransform
                 .DORotate(new Vector3(360, 360, 360), duration, RotateMode.FastBeyond360)
-                .SetEase(Ease.OutQuad);
+                .SetEase(Ease.OutQuad)
+                .SetTarget(casingTransform);
         }
+
 
         public static void TrySound(AudioSource audioSource, AudioClip clip)
         {

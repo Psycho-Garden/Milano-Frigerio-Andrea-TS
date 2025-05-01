@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6279023114588990471}
   - component: {fileID: 1090610327662374692}
   - component: {fileID: 6148901952055320251}
+  - component: {fileID: 8332052248734777758}
   m_Layer: 6
   m_Name: New_Rifle_Bullet
   m_TagString: Untagged
@@ -166,6 +167,18 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
+--- !u!114 &8332052248734777758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 425024253184490542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0ad9fe525b2ac846b3a345e2cb10f62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7146834331166141042
 GameObject:
   m_ObjectHideFlags: 0

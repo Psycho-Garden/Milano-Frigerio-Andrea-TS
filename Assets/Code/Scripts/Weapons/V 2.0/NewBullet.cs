@@ -171,7 +171,7 @@ namespace AF.TS.Weapons
 
         private void OnTriggerEnter(Collider other)
         {
-            OnCollision(other);
+            //OnCollision(other);
         }
 
         private void OnDispose()

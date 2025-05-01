@@ -4,5 +4,5 @@ using UnityEngine.Events;
 namespace AF.TS.Utils
 {
     [System.Serializable]
-    public class TriggerEvent : UnityEvent<Transform> { }
+    public class TriggerEvent : UnityEvent<Transform> {}
 }
